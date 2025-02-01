@@ -16,7 +16,8 @@ export const cardTemplates = {
 
     scenarioCard: (scenario, stats) => `
         <div class="scenario-card" data-scenario="${scenario.id}">
-            <div class="card-content" style="background-image: url('images/scenarios/${scenario.id}.jpg')">
+            <div class="card-content">
+                <div class="scenario-image" style="background-image: url('${scenario.image}')"></div>
                 <div class="scenario-overlay">
                     <h3 class="scenario-title">${scenario.title}</h3>
                     <div class="scenario-description">${scenario.description}</div>

@@ -4,7 +4,7 @@ export const scenarios = {
         id: "azathoth",
         title: "Пришествие Азатота",
         description: "Древний бог пробуждается в Аркхэме...",
-        image: "./Resource/azathoth-card-bg.webp.jpg",
+        image: "images/scenarios/azathoth.jpg",
         startArea: "station",
         districts: [
             { 
@@ -36,7 +36,7 @@ export const scenarios = {
         id: "cthulhu",
         title: "Зов Ктулху",
         description: "Древний спит в своём городе Р'льех...",
-        image: "./Resource/Ктулху2.jpg",
+        image: "images/scenarios/cthulhu.jpg",
         startArea: "port",
         districts: [
             {
