@@ -1,0 +1,134 @@
+.character-card {
+    background-image: url('../images/ui/card-background.jpg');
+    background-size: cover;
+    /* ... остальные стили ... */
+}
+
+.character-content {
+    background-color: rgba(0, 0, 0, 0.7);
+    /* ... остальные стили ... */
+}
+
+/* Добавляем стили для изображений персонажей */
+.character-portrait {
+    width: 200px;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Специфичные стили для каждого сценария */
+[data-scenario="azathoth"] .card-content {
+    background-position: center 30%; /* Смещаем фокус немного вверх для Азатота */
+}
+
+[data-scenario="cthulhu"] .card-content {
+    background-position: center 40%; /* Настраиваем позицию для Ктулху */
+}
+
+.scenario-overlay {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8));
+    padding: 20px;
+    height: 100%;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Контейнер для карточек сценариев */
+.scenarios-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Стили для отдельной карточки сценария */
+.scenario-card {
+    width: 300px;
+    height: 400px;
+    background-color: #1a1a1a;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    position: relative; /* Добавляем для правильного позиционирования */
+}
+
+.scenario-card:hover {
+    transform: translateY(-5px);
+}
+
+.scenario-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.scenario-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.scenario-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.scenario-label {
+    font-size: 14px;
+    color: #ccc;
+    text-align: center;
+    margin-top: auto;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+/* Стили для статистики */
+.stat-box {
+    text-align: center;
+    padding: 8px 15px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #ffd700;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+} 

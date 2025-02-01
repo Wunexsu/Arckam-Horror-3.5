@@ -1,38 +1,39 @@
 import { characters } from '../../data/characters.js';
-import { addCharacterCardEffects } from './base.js';
 import { CardLoader } from './cardLoader.js';
+import { CardFactory } from './cardFactory.js';
+import { CardEffectsFactory } from '../effects/cardEffectsFactory.js';
 
-// Создание карточки персонажа
-function createCharacterCard(characterId, character) {
-    const card = document.createElement('div');
-    card.className = 'character-card';
-    card.innerHTML = createCharacterCardContent(character);
-    
-    addCharacterCardEffects(card, characterId);
-    
-    return card;
-}
+// Фабрика карточек персонажей
+class CharacterCardFactory extends CardFactory {
+    constructor() {
+        super({
+            cardClass: 'character-card',
+            addEffects: (card, id) => CardEffectsFactory.createCharacterEffects(card, id)
+        });
+    }
 
-// Создание содержимого карточки персонажа
-function createCharacterCardContent(character) {
-    return `
-        <div class="character-content">
-            <h2 class="character-title">${character.name}</h2>
-            <div class="character-role">${character.role}</div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value">${character.stats.will}</div>
-                    <div class="stat-name">Воля</div>
+    createCardContent(character) {
+        return `
+            <div class="character-content">
+                <h2 class="character-title">${character.name}</h2>
+                <div class="character-role">${character.role}</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${character.stats.will}</div>
+                        <div class="stat-name">Воля</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${character.stats.combat}</div>
+                        <div class="stat-name">Бой</div>
+                    </div>
+                    <div class="ability">${character.ability}</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value">${character.stats.combat}</div>
-                    <div class="stat-name">Бой</div>
-                </div>
-                <div class="ability">${character.ability}</div>
             </div>
-        </div>
-    `;
+        `;
+    }
 }
+
+export const characterFactory = new CharacterCardFactory();
 
 // Загрузка карточек персонажей
 export function loadCharacters() {
@@ -40,6 +41,6 @@ export function loadCharacters() {
         type: 'персонажей',
         containerClass: '.characters-wrapper',
         data: characters,
-        createCard: createCharacterCard
+        createCard: characterFactory.createCard
     });
 } 

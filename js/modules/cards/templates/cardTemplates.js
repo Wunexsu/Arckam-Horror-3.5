@@ -15,22 +15,27 @@ export const cardTemplates = {
     `,
 
     scenarioCard: (scenario, stats) => `
-        <div class="card-content">
-            <h3 class="scenario-title">${scenario.title}</h3>
-            <div class="scenario-description">${scenario.description}</div>
-            <div class="scenario-stats">
-                ${cardTemplates.statBox('Улики', stats.totalClues)}
-                ${cardTemplates.statBox('Безысходность', stats.totalDespair)}
-            </div>
-            <div class="scenario-label">
-                <div>Начальная локация: ${stats.startLocation}</div>
-                <div>Монстры: ${stats.monstersCount}</div>
+        <div class="scenario-card" data-scenario="${scenario.id}">
+            <div class="card-content" style="background-image: url('images/scenarios/${scenario.id}.jpg')">
+                <div class="scenario-overlay">
+                    <h3 class="scenario-title">${scenario.title}</h3>
+                    <div class="scenario-description">${scenario.description}</div>
+                    <div class="scenario-stats">
+                        ${cardTemplates.statBox('Улики', stats.totalClues)}
+                        ${cardTemplates.statBox('Безысходность', stats.totalDespair)}
+                    </div>
+                    <div class="scenario-label">
+                        <div>Начальная локация: ${stats.startLocation}</div>
+                        <div>Монстры: ${stats.monstersCount}</div>
+                    </div>
+                </div>
             </div>
         </div>
     `,
 
     characterCard: (character) => `
         <div class="character-content">
+            <div class="character-portrait" style="background-image: url('images/characters/${character.id}.jpg')"></div>
             <h2 class="character-title">${character.name}</h2>
             <div class="character-role">${character.role}</div>
             <div class="stats-grid">

@@ -1,45 +1,34 @@
 import { INITIAL_GAME_STATE, INITIAL_GAME_CONFIG } from './initialState.js';
+import { createStateManager } from '../modules/utils/stateUtils.js';
 
 // Менеджер состояния игры
 class GameStateManager {
     constructor() {
-        this.state = { ...INITIAL_GAME_STATE };
-        this.config = { ...INITIAL_GAME_CONFIG };
+        // Создаем менеджеры состояния с уведомлением подписчиков
         this.subscribers = new Set();
-    }
-
-    // Получение текущего состояния
-    getState() {
-        return this.state;
-    }
-
-    // Получение текущей конфигурации
-    getConfig() {
-        return this.config;
+        [this.getState, this.setState] = createStateManager(
+            INITIAL_GAME_STATE,
+            () => this.notifySubscribers()
+        );
+        [this.getConfig, this.setConfig] = createStateManager(
+            INITIAL_GAME_CONFIG,
+            () => this.notifySubscribers()
+        );
     }
 
     // Обновление состояния
     updateState(updates) {
-        this.state = {
-            ...this.state,
-            ...updates
-        };
-        this.notifySubscribers();
+        this.setState(updates);
     }
 
     // Обновление конфигурации
     updateConfig(updates) {
-        this.config = {
-            ...this.config,
-            ...updates
-        };
-        this.notifySubscribers();
+        this.setConfig(updates);
     }
 
     // Сброс состояния
     resetState() {
-        this.state = { ...INITIAL_GAME_STATE };
-        this.notifySubscribers();
+        this.setState(INITIAL_GAME_STATE);
     }
 
     // Подписка на изменения
@@ -50,12 +39,15 @@ class GameStateManager {
 
     // Уведомление подписчиков
     notifySubscribers() {
-        this.subscribers.forEach(callback => callback(this.state, this.config));
+        const state = this.getState();
+        const config = this.getConfig();
+        this.subscribers.forEach(callback => callback(state, config));
     }
 
     // Инициализация игры
     initGame(scenario) {
-        if (!scenario || !this.state.selectedCharacter) {
+        const state = this.getState();
+        if (!scenario || !state.selectedCharacter) {
             console.error('Не выбран сценарий или персонаж');
             return;
         }
@@ -70,15 +62,16 @@ class GameStateManager {
             };
         });
 
+        const config = this.getConfig();
         this.updateState({
             currentLocation: scenario.startArea,
             districts,
             players: [{
-                ...this.state.selectedCharacter,
+                ...state.selectedCharacter,
                 location: scenario.startArea,
                 isLeader: true
             }],
-            actionsLeft: this.config.maxActions
+            actionsLeft: config.maxActions
         });
     }
 }
