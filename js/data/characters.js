@@ -1,78 +1,91 @@
+import { ROLE_TEMPLATES, DEFAULT_ITEMS, CHARACTER_ABILITIES } from './characterTemplates.js';
+import { MONSTER_TEMPLATES, MONSTER_ACTIVATIONS, MONSTER_ABILITIES } from './monsterTemplates.js';
+
 // Фабричная функция для создания персонажа
 function createCharacter(config) {
+    const roleTemplate = ROLE_TEMPLATES[config.roleType];
+    const defaultItems = DEFAULT_ITEMS[config.roleType.toLowerCase()];
+    
+    if (!roleTemplate) {
+        console.error(`Неизвестный тип роли: ${config.roleType}`);
+        return null;
+    }
+
     return {
         name: config.name,
         role: config.role,
         stats: {
-            will: config.stats.will || 0,
-            combat: config.stats.combat || 0,
-            intellect: config.stats.intellect || 0,
-            agility: config.stats.agility || 0
+            ...roleTemplate.stats,
+            ...config.stats
         },
         ability: config.ability,
-        inventory: config.inventory || [],
-        spells: config.spells || [],
-        items: config.items || []
+        inventory: [
+            ...roleTemplate.baseInventory,
+            `$${defaultItems.money}`,
+            ...(config.inventory || [])
+        ],
+        spells: [
+            ...(roleTemplate.baseSpells || []),
+            ...(defaultItems.spells || []),
+            ...(config.spells || [])
+        ],
+        items: [
+            ...(roleTemplate.baseItems || []),
+            ...(defaultItems.items || []),
+            ...(config.items || [])
+        ]
     };
 }
 
 // Фабричная функция для создания монстра
 function createMonster(config) {
+    const template = MONSTER_TEMPLATES[config.monsterType];
+    
+    if (!template) {
+        console.error(`Неизвестный тип монстра: ${config.monsterType}`);
+        return null;
+    }
+
     return {
         name: config.name,
-        health: config.health || 1,
-        attackMod: config.attackMod || 0,
+        health: config.health || template.baseHealth,
+        attackMod: config.attackMod || template.baseAttackMod,
         activation: config.activation,
-        abilities: config.abilities || []
+        abilities: [
+            ...template.baseAbilities,
+            ...(config.abilities || [])
+        ]
     };
 }
 
 // Данные персонажей
-const characters = {
+export const characters = {
     "agnes": createCharacter({
         name: "Агнес Бейкер",
         role: "Мистик",
-        stats: {
-            will: 3,
-            combat: 2,
-            intellect: 4,
-            agility: 2
-        },
-        ability: "Кровавые чары: получать урон вместо ужаса при чтении заклинаний",
-        inventory: ["Гиперборейская реликвия", "$3"],
-        spells: ["Буря духов", "Защита плоти"]
+        roleType: "MYSTIC",
+        ability: CHARACTER_ABILITIES.BLOOD_MAGIC
     }),
     
     "joe": createCharacter({
         name: "Джо Даймонд",
         role: "Детектив",
-        stats: {
-            will: 2,
-            combat: 3,
-            intellect: 3,
-            agility: 3
-        },
-        ability: "Дедукция: раз в ход можно перебросить проверку знаний",
-        inventory: ["Револьвер .38", "$5"],
-        items: ["Лупа", "Полицейский значок"]
+        roleType: "DETECTIVE",
+        ability: CHARACTER_ABILITIES.DEDUCTION
     })
 };
 
 // Данные монстров
-const monsters = {
+export const monsters = {
     "blindWatcher": createMonster({
         name: "Безглазый наблюдатель",
-        health: 4,
-        attackMod: -1,
-        activation: "Двигается к ближайшему сыщику.",
-        abilities: ["Неуязвимость к физическому оружию"]
+        monsterType: "WATCHER",
+        activation: MONSTER_ACTIVATIONS.PURSUE
     }),
     
     "cultist": createMonster({
         name: "Культист",
-        health: 2,
-        attackMod: 0,
-        activation: "Добавляет жетон безысходности в свой район.",
-        abilities: ["Призыв подмоги"]
+        monsterType: "CULTIST",
+        activation: MONSTER_ACTIVATIONS.ADD_DESPAIR
     })
 }; 

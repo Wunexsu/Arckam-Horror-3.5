@@ -1,3 +1,7 @@
+import { gameState, gameConfig, resetGameState } from './modules/state.js';
+import { loadScenarios } from './modules/cards/scenario.js';
+import { loadCharacters } from './modules/cards/character.js';
+
 // Состояние игры
 let gameState = {
     currentLocation: null,
@@ -28,7 +32,7 @@ function initGame() {
         return;
     }
 
-    // Загрузка сценариев
+    // Загрузка сценариев и персонажей
     loadScenarios();
     loadCharacters();
     
@@ -66,16 +70,6 @@ function loadCards(options) {
     });
 
     console.log(`${type} загружены`);
-}
-
-// Загрузка сценариев
-function loadScenarios() {
-    loadCards({
-        type: 'сценариев',
-        containerClass: '.scenarios-wrapper',
-        data: scenarios,
-        createCard: createScenarioCard
-    });
 }
 
 // Создание карточки сценария
@@ -229,16 +223,6 @@ function addCharacterCardEffects(card, characterId) {
         onLeave: (element) => {
             element.querySelector('.character-content')?.classList.remove('highlight');
         }
-    });
-}
-
-// Загрузка персонажей
-function loadCharacters() {
-    loadCards({
-        type: 'персонажей',
-        containerClass: '.characters-wrapper',
-        data: characters,
-        createCard: createCharacterCard
     });
 }
 
@@ -398,4 +382,11 @@ function handleModifiedMythos() {
 }
 
 // Запуск при загрузке страницы
-document.addEventListener('DOMContentLoaded', initGame); 
+document.addEventListener('DOMContentLoaded', initGame);
+
+// Экспорт функций для использования в других модулях
+export {
+    initGame,
+    gameState,
+    gameConfig
+}; 
