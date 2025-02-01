@@ -1,5 +1,6 @@
 import { characters } from '../../data/characters.js';
 import { addCharacterCardEffects } from './base.js';
+import { CardLoader } from './cardLoader.js';
 
 // Создание карточки персонажа
 function createCharacterCard(characterId, character) {
@@ -35,19 +36,10 @@ function createCharacterCardContent(character) {
 
 // Загрузка карточек персонажей
 export function loadCharacters() {
-    console.log('Загрузка персонажей...');
-    const wrapper = document.querySelector('.characters-wrapper');
-    
-    if (!wrapper) {
-        console.error('Ошибка: Не найден контейнер для персонажей');
-        return;
-    }
-
-    Object.entries(characters).forEach(([key, character], index) => {
-        const card = createCharacterCard(key, character);
-        card.style.animationDelay = `${index * 150}ms`;
-        wrapper.appendChild(card);
+    CardLoader.load({
+        type: 'персонажей',
+        containerClass: '.characters-wrapper',
+        data: characters,
+        createCard: createCharacterCard
     });
-
-    console.log('Персонажи загружены');
 } 

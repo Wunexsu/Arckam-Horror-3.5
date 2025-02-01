@@ -1,5 +1,7 @@
-// Состояние игры
-export const gameState = {
+import { gameStateManager } from './stateManager.js';
+
+// Начальное состояние игры
+const INITIAL_STATE = {
     currentLocation: null,
     actionsLeft: 3,
     mythosPool: [],
@@ -13,54 +15,26 @@ export const gameState = {
     selectedScenario: null
 };
 
-// Конфигурация игры
-export const gameConfig = {
-    useModifiedMythos: false
-};
+// Экспорт состояния и конфигурации
+export const gameState = gameStateManager.getState();
+export const gameConfig = gameStateManager.getConfig();
 
 // Функции для работы с состоянием
 export function updateGameState(updates) {
-    Object.assign(gameState, updates);
+    gameStateManager.updateState(updates);
 }
 
 export function resetGameState() {
-    gameState.currentLocation = null;
-    gameState.actionsLeft = 3;
-    gameState.mythosPool = [];
-    gameState.mythosDiscard = [];
-    gameState.despairTokens = 0;
-    gameState.currentRoundTokens = 0;
-    gameState.players = [];
-    gameState.monsters = [];
-    gameState.districts = {};
-    gameState.selectedCharacter = null;
-    gameState.selectedScenario = null;
+    gameStateManager.resetState();
 }
 
 // Функция инициализации игры
 export function startGame() {
     const scenario = gameState.selectedScenario;
+    if (!scenario) {
+        console.error('Не выбран сценарий');
+        return;
+    }
     
-    // Инициализация районов
-    gameState.districts = {};
-    scenario.districts.forEach(district => {
-        gameState.districts[district.id] = {
-            ...district,
-            despair: district.initialDespair,
-            clues: district.initialClues
-        };
-    });
-    
-    // Установка начальной локации
-    gameState.currentLocation = scenario.startArea;
-    
-    // Инициализация игрока
-    gameState.players = [{
-        ...gameState.selectedCharacter,
-        location: scenario.startArea,
-        isLeader: true
-    }];
-    
-    // Обновление интерфейса
-    updateGameBoard();
+    gameStateManager.initGame(scenario);
 } 

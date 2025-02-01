@@ -1,100 +1,26 @@
-import { CARD_EFFECTS } from '../cards/base.js';
 import { selectScenario, selectCharacter } from '../actions/selectionActions.js';
-import { applyHoverStyles, removeHoverStyles } from './styleEffects.js';
 
-// Типы карт и их конфигурация
-const CARD_TYPES = {
-    SCENARIO: {
-        effects: CARD_EFFECTS.scenario,
+// Константы для эффектов карточек
+export const CARD_EFFECTS = {
+    default: {
+        hoverClass: 'card-hover',
+        transform: 'translateY(-5px)',
+        shadow: '0 5px 15px rgba(242, 212, 146, 0.3)',
+        resetTransform: 'translateY(0)',
+        resetShadow: 'none'
+    },
+    scenario: {
+        hoverClass: 'scenario-hover',
+        transform: 'translateY(-5px) scale(1.02)',
+        shadow: '0 8px 20px rgba(242, 212, 146, 0.4)',
         highlightSelector: '.scenario-description',
         onSelect: selectScenario
     },
-    CHARACTER: {
-        effects: CARD_EFFECTS.character,
+    character: {
+        hoverClass: 'character-hover',
+        transform: 'translateY(-5px) rotate(1deg)',
+        shadow: '0 8px 20px rgba(106, 90, 205, 0.3)',
         highlightSelector: '.character-content',
         onSelect: selectCharacter
     }
-};
-
-// Класс для управления эффектами карточек
-export class CardEffectsManager {
-    constructor(element, options = {}) {
-        this.element = element;
-        this.effects = {
-            ...CARD_EFFECTS.default,
-            ...options
-        };
-        this.bindEvents();
-    }
-
-    bindEvents() {
-        this.element.addEventListener('mouseover', () => this.applyHoverEffects());
-        this.element.addEventListener('mouseout', () => this.resetHoverEffects());
-        
-        if (this.effects.onClick) {
-            this.element.addEventListener('click', this.effects.onClick);
-        }
-    }
-
-    applyHoverEffects() {
-        this.element.style.transform = this.effects.transform;
-        this.element.style.boxShadow = this.effects.shadow;
-        this.element.classList.add(this.effects.hoverClass);
-        
-        if (this.effects.onHover) {
-            this.effects.onHover(this.element);
-        }
-    }
-
-    resetHoverEffects() {
-        this.element.style.transform = this.effects.resetTransform;
-        this.element.style.boxShadow = this.effects.resetShadow;
-        this.element.classList.remove(this.effects.hoverClass);
-        
-        if (this.effects.onLeave) {
-            this.effects.onLeave(this.element);
-        }
-    }
-
-    updateEffects(newEffects) {
-        this.effects = {
-            ...this.effects,
-            ...newEffects
-        };
-    }
-}
-
-// Функция для добавления эффектов карточек
-export function addCardEffects(card, options = {}) {
-    return new CardEffectsManager(card, options);
-}
-
-// Общая функция для добавления эффектов к карточке
-export function addCardTypeEffects(card, cardType, id) {
-    const config = CARD_TYPES[cardType];
-    if (!config) {
-        console.error(`Неизвестный тип карты: ${cardType}`);
-        return null;
-    }
-
-    return new CardEffectsManager(card, {
-        ...config.effects,
-        onClick: () => config.onSelect(id),
-        onHover: (element) => {
-            element.querySelector(config.highlightSelector)?.classList.add('highlight');
-        },
-        onLeave: (element) => {
-            element.querySelector(config.highlightSelector)?.classList.remove('highlight');
-        }
-    });
-}
-
-// Добавление эффектов для карточки сценария
-export function addScenarioCardEffects(card, scenarioId) {
-    return addCardTypeEffects(card, 'SCENARIO', scenarioId);
-}
-
-// Добавление эффектов для карточки персонажа
-export function addCharacterCardEffects(card, characterId) {
-    return addCardTypeEffects(card, 'CHARACTER', characterId);
-} 
+}; 

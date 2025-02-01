@@ -1,41 +1,48 @@
-// Утилиты для применения стилей
-export function applyStyles(element, styles) {
+// Общая функция для обработки стилей
+function handleStyles(element, styles, isApplying = true) {
     const {
         transform,
         boxShadow,
         classes = []
     } = styles;
 
-    if (transform) element.style.transform = transform;
-    if (boxShadow) element.style.boxShadow = boxShadow;
-    if (classes.length) element.classList.add(...classes);
+    if (transform) {
+        element.style.transform = isApplying ? transform : '';
+    }
+    if (boxShadow) {
+        element.style.boxShadow = isApplying ? boxShadow : '';
+    }
+    if (classes.length) {
+        element.classList[isApplying ? 'add' : 'remove'](...classes);
+    }
 }
 
-export function removeStyles(element, styles) {
-    const {
-        transform,
-        boxShadow,
-        classes = []
-    } = styles;
+// Утилиты для применения стилей
+export function applyStyles(element, styles) {
+    handleStyles(element, styles, true);
+}
 
-    if (transform) element.style.transform = '';
-    if (boxShadow) element.style.boxShadow = '';
-    if (classes.length) element.classList.remove(...classes);
+// Утилита для удаления стилей
+export function removeStyles(element, styles) {
+    handleStyles(element, styles, false);
+}
+
+// Общая функция для применения эффектов наведения
+export function applyHoverEffect(element, effects, isHover = true) {
+    const styles = {
+        transform: isHover ? effects.transform : effects.resetTransform,
+        boxShadow: isHover ? effects.shadow : effects.resetShadow,
+        classes: [effects.hoverClass]
+    };
+
+    handleStyles(element, styles, isHover);
 }
 
 // Функции для конкретных эффектов
 export function applyHoverStyles(element, effects) {
-    applyStyles(element, {
-        transform: effects.transform,
-        boxShadow: effects.shadow,
-        classes: [effects.hoverClass]
-    });
+    applyHoverEffect(element, effects, true);
 }
 
 export function removeHoverStyles(element, effects) {
-    applyStyles(element, {
-        transform: effects.resetTransform,
-        boxShadow: effects.resetShadow,
-        classes: [effects.hoverClass]
-    });
+    applyHoverEffect(element, effects, false);
 } 
