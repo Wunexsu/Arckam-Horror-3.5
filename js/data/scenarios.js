@@ -1,9 +1,10 @@
 // Данные сценариев
-const scenarios = {
+export const scenarios = {
     "azathoth": {
         id: "azathoth",
         title: "Пришествие Азатота",
         description: "Древний бог пробуждается в Аркхэме...",
+        image: "./Resource/azathoth-card-bg.webp.jpg",
         startArea: "station",
         districts: [
             { 
@@ -35,6 +36,7 @@ const scenarios = {
         id: "cthulhu",
         title: "Зов Ктулху",
         description: "Древний спит в своём городе Р'льех...",
+        image: "./Resource/Ктулху2.jpg",
         startArea: "port",
         districts: [
             {
@@ -50,7 +52,7 @@ const scenarios = {
 };
 
 // Данные аномалий
-const anomalies = {
+export const anomalies = {
     "timeRift": {
         description: "Время искажается...",
         effect: "Проверка знаний (4) или получите 2 ужаса."

@@ -1,4 +1,5 @@
 import { CARD_EFFECTS } from '../cards/base.js';
+import { selectScenario, selectCharacter } from '../actions/selectionActions.js';
 import { applyHoverStyles, removeHoverStyles } from './styleEffects.js';
 
 // Типы карт и их конфигурация
@@ -36,7 +37,9 @@ export class CardEffectsManager {
     }
 
     applyHoverEffects() {
-        applyHoverStyles(this.element, this.effects);
+        this.element.style.transform = this.effects.transform;
+        this.element.style.boxShadow = this.effects.shadow;
+        this.element.classList.add(this.effects.hoverClass);
         
         if (this.effects.onHover) {
             this.effects.onHover(this.element);
@@ -44,7 +47,9 @@ export class CardEffectsManager {
     }
 
     resetHoverEffects() {
-        removeHoverStyles(this.element, this.effects);
+        this.element.style.transform = this.effects.resetTransform;
+        this.element.style.boxShadow = this.effects.resetShadow;
+        this.element.classList.remove(this.effects.hoverClass);
         
         if (this.effects.onLeave) {
             this.effects.onLeave(this.element);
@@ -72,7 +77,7 @@ export function addCardTypeEffects(card, cardType, id) {
         return null;
     }
 
-    return addCardEffects(card, {
+    return new CardEffectsManager(card, {
         ...config.effects,
         onClick: () => config.onSelect(id),
         onHover: (element) => {

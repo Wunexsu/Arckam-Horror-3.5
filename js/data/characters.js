@@ -60,19 +60,54 @@ function createMonster(config) {
 
 // Данные персонажей
 export const characters = {
-    "agnes": createCharacter({
-        name: "Агнес Бейкер",
-        role: "Мистик",
-        roleType: "MYSTIC",
-        ability: CHARACTER_ABILITIES.BLOOD_MAGIC
-    }),
-    
-    "joe": createCharacter({
-        name: "Джо Даймонд",
-        role: "Детектив",
-        roleType: "DETECTIVE",
-        ability: CHARACTER_ABILITIES.DEDUCTION
-    })
+    detective: {
+        id: 'detective',
+        name: 'Детектив Джон',
+        role: 'Детектив',
+        stats: {
+            will: 4,
+            combat: 3,
+            maxHealth: 7,
+            maxSanity: 7,
+            health: 7,
+            sanity: 7
+        },
+        ability: 'Может использовать улики для перебросов в проверках воли',
+        inventory: [],
+        effects: []
+    },
+    professor: {
+        id: 'professor',
+        name: 'Профессор Армитаж',
+        role: 'Учёный',
+        stats: {
+            will: 5,
+            combat: 2,
+            maxHealth: 6,
+            maxSanity: 8,
+            health: 6,
+            sanity: 8
+        },
+        ability: 'Может изучать монстров, получая бонус к проверкам против них',
+        inventory: [],
+        effects: []
+    },
+    occultist: {
+        id: 'occultist',
+        name: 'Мари Ламбо',
+        role: 'Оккультист',
+        stats: {
+            will: 5,
+            combat: 2,
+            maxHealth: 5,
+            maxSanity: 9,
+            health: 5,
+            sanity: 9
+        },
+        ability: 'Может использовать заклинания без потери рассудка',
+        inventory: [],
+        effects: []
+    }
 };
 
 // Данные монстров

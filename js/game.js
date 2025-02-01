@@ -1,43 +1,18 @@
-import { gameState, gameConfig, resetGameState } from './modules/state.js';
+import { gameState, gameConfig, resetGameState, startGame } from './data/gameState.js';
 import { loadScenarios } from './modules/cards/scenario.js';
 import { loadCharacters } from './modules/cards/character.js';
-
-// Состояние игры
-let gameState = {
-    currentLocation: null,
-    actionsLeft: 3,
-    mythosPool: [],
-    mythosDiscard: [],
-    despairTokens: 0,
-    currentRoundTokens: 0,
-    players: [],
-    monsters: [],
-    districts: {},
-    selectedCharacter: null,
-    selectedScenario: null
-};
-
-// Конфигурация игры
-const gameConfig = {
-    useModifiedMythos: false
-};
+import { selectScenario, selectCharacter } from './modules/actions/selectionActions.js';
 
 // Инициализация игры
 function initGame() {
     console.log('Инициализация игры...');
     
-    // Проверяем, что все необходимые данные загружены
-    if (!scenarios || !characters) {
-        console.error('Ошибка: Не загружены данные сценариев или персонажей');
-        return;
-    }
-
     // Загрузка сценариев и персонажей
     loadScenarios();
     loadCharacters();
     
     // Обработчики событий
-    document.getElementById('mythosModeToggle').addEventListener('change', function(e) {
+    document.getElementById('mythosModeToggle')?.addEventListener('change', function(e) {
         gameConfig.useModifiedMythos = e.target.checked;
         document.getElementById('mythosModeLabel').textContent = 
             this.checked ? "Расширенная фаза мифов" : "Стандартные правила";
@@ -165,7 +140,6 @@ class CardEffectsManager {
         this.element.style.boxShadow = this.effects.shadow;
         this.element.classList.add(this.effects.hoverClass);
         
-        // Вызываем дополнительный обработчик при наведении, если он есть
         if (this.effects.onHover) {
             this.effects.onHover(this.element);
         }
@@ -176,13 +150,11 @@ class CardEffectsManager {
         this.element.style.boxShadow = this.effects.resetShadow;
         this.element.classList.remove(this.effects.hoverClass);
         
-        // Вызываем дополнительный обработчик при уходе курсора, если он есть
         if (this.effects.onLeave) {
             this.effects.onLeave(this.element);
         }
     }
 
-    // Метод для обновления эффектов
     updateEffects(newEffects) {
         this.effects = {
             ...this.effects,
@@ -202,7 +174,6 @@ function addScenarioCardEffects(card, scenarioId) {
         ...CARD_EFFECTS.scenario,
         onClick: () => selectScenario(scenarioId),
         onHover: (element) => {
-            // Дополнительные эффекты при наведении на сценарий
             element.querySelector('.scenario-description')?.classList.add('highlight');
         },
         onLeave: (element) => {
@@ -217,7 +188,6 @@ function addCharacterCardEffects(card, characterId) {
         ...CARD_EFFECTS.character,
         onClick: () => selectCharacter(characterId),
         onHover: (element) => {
-            // Дополнительные эффекты при наведении на персонажа
             element.querySelector('.character-content')?.classList.add('highlight');
         },
         onLeave: (element) => {
@@ -258,135 +228,16 @@ function createCharacterCardContent(character) {
     `;
 }
 
-// Выбор сценария
-function selectScenario(scenarioId) {
-    gameState.selectedScenario = scenarios[scenarioId];
-    document.getElementById('scenarioSelect').classList.remove('active');
-    document.getElementById('characterSelect').classList.add('active');
-}
-
-// Выбор персонажа
-function selectCharacter(characterId) {
-    gameState.selectedCharacter = characters[characterId];
-    document.getElementById('characterSelect').classList.remove('active');
-    document.getElementById('gameBoard').classList.add('active');
-    startGame();
-}
-
-// Запуск игры
-function startGame() {
-    const scenario = gameState.selectedScenario;
-    
-    // Инициализация районов
-    gameState.districts = {};
-    scenario.districts.forEach(district => {
-        gameState.districts[district.id] = {
-            ...district,
-            despair: district.initialDespair,
-            clues: district.initialClues
-        };
-    });
-    
-    // Установка начальной локации
-    gameState.currentLocation = scenario.startArea;
-    
-    // Инициализация игрока
-    gameState.players = [{
-        ...gameState.selectedCharacter,
-        location: scenario.startArea,
-        isLeader: true
-    }];
-    
-    // Обновление интерфейса
-    updateGameBoard();
-}
-
-// Обновление игрового поля
-function updateGameBoard() {
-    const currentDistrict = gameState.districts[gameState.currentLocation];
-    
-    // Обновление заголовка локации
-    document.querySelector('.location-title h2').textContent = currentDistrict.name.toUpperCase();
-    
-    // Обновление доступных путей
-    const pathOptions = document.querySelector('.path-options');
-    pathOptions.innerHTML = '<div class="section-title">Доступные пути</div>';
-    
-    currentDistrict.connectedTo.forEach(pathId => {
-        const targetDistrict = gameState.districts[pathId];
-        const button = document.createElement('button');
-        button.className = 'path-option';
-        button.textContent = `➜ ${targetDistrict.name} (1 действие)`;
-        button.addEventListener('click', () => moveToLocation(pathId));
-        pathOptions.appendChild(button);
-    });
-    
-    // Обновление состояния кнопок действий
-    gameInterface.updateActionButtons();
-}
-
-// Перемещение
-function moveToLocation(locationId) {
-    if (gameState.actionsLeft < 1) return;
-    
-    gameState.currentLocation = locationId;
-    gameState.actionsLeft--;
-    
-    updateGameBoard();
-}
-
-// Фаза мифов
-function mythosPhase() {
-    if (gameConfig.useModifiedMythos) {
-        handleModifiedMythos();
-    } else {
-        handleStandardMythos();
-    }
-    
-    // Обновляем состояние кнопок после фазы мифов
-    gameInterface.updateActionButtons();
-}
-
-// Стандартная фаза мифов
-function handleStandardMythos() {
-    const tokens = drawMythosTokens(2);
-    tokens.forEach(token => {
-        if (token.type === 'despair') {
-            addDespairToken('global');
-        }
-    });
-}
-
-// Модифицированная фаза мифов
-function handleModifiedMythos() {
-    gameState.currentRoundTokens = 0;
-    
-    const leader = gameState.players.find(p => p.isLeader);
-    const otherPlayers = gameState.players.filter(p => !p.isLeader);
-    
-    leader.mythosTokens = drawMythosTokens(2);
-    
-    if (otherPlayers.length > 0) {
-        otherPlayers[0].mythosTokens = drawMythosTokens(2);
-        otherPlayers.slice(1).forEach(player => {
-            player.mythosTokens = drawMythosTokens(1);
-        });
-    }
-    
-    gameState.players.forEach(player => {
-        player.mythosTokens.forEach(token => {
-            processMythosToken(token, player);
-        });
-        player.mythosTokens = [];
-    });
-}
-
 // Запуск при загрузке страницы
 document.addEventListener('DOMContentLoaded', initGame);
 
 // Экспорт функций для использования в других модулях
 export {
     initGame,
-    gameState,
-    gameConfig
+    loadCards,
+    CARD_EFFECTS,
+    CardEffectsManager,
+    addCardEffects,
+    addScenarioCardEffects,
+    addCharacterCardEffects
 }; 

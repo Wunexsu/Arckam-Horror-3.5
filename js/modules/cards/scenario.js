@@ -1,5 +1,6 @@
 import { loadCards } from './base.js';
 import { addScenarioCardEffects } from '../effects/cardEffects.js';
+import { scenarios } from '../../data/scenarios.js';
 
 // Загрузка сценариев
 export function loadScenarios() {
