@@ -1,0 +1,18 @@
+function updateDistrictView(districtId) {
+    const districtElement = document.querySelector(`#${districtId}`);
+    const despairElement = districtElement.querySelector('.despair-counter');
+    
+    // Обновить счетчик
+    despairElement.textContent = gameState.districts[districtId].despair;
+    
+    // Анимация добавления жетона
+    despairElement.classList.add('despair-pulse');
+    setTimeout(() => {
+        despairElement.classList.remove('despair-pulse');
+    }, 500);
+    
+    // Обновить аномалии
+    if (gameState.districts[districtId].hasAnomaly) {
+        districtElement.classList.add('anomaly-active');
+    }
+}

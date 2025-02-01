@@ -1,0 +1,18 @@
+/* Стили для гексов из сценария */
+.hex-tile {
+    background: #2c1f15 url('hex-pattern.png');
+    border: 2px solid #6a5acd;
+    color: #f2d492;
+    font-family: 'Old Standard TT', serif;
+}
+
+.hex-tile.vortex {
+    background: #4a2b69;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}

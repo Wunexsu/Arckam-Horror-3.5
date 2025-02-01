@@ -1,0 +1,62 @@
+/* Анимации и базовые стили */
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px) rotate(2deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotate(0);
+    }
+}
+
+.cards-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 30px;
+}
+
+/* Карточка сценария */
+.scenario-card {
+    width: 280px;
+    height: 380px;
+    background: #3d291c url('scenario-pattern.png');
+    border: 2px solid #f2d492;
+    border-radius: 12px;
+    padding: 20px;
+    animation: cardAppear 0.8s ease forwards;
+    opacity: 0;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Карточка персонажа */
+.character-card {
+    width: 320px;
+    height: 450px;
+    background: #1a1426 linear-gradient(45deg, #2a1e35 0%, #1a1426 100%);
+    border: 3px solid #6a5acd;
+    animation: cardAppear 0.8s ease forwards;
+    position: relative;
+}
+
+/* Контент внутри карточек */
+.character-content {
+    padding: 20px;
+}
+
+.character-title {
+    font-family: 'Old English', serif;
+    color: #c0a45e;
+    text-shadow: 2px 2px 2px #000;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}

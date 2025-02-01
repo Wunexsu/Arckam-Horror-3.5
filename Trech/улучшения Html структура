@@ -1,0 +1,52 @@
+<div id="gameBoard" class="screen active">
+    <!-- Центральное изображение локации -->
+    <div class="location-view" id="locationView">
+        <div class="location-image" data-location="station"></div>
+        
+        <!-- Интерактивные элементы на изображении -->
+        <div class="clue-overlay" data-clues="2"></div>
+        <div class="monster-overlay" data-type="cultist"></div>
+    </div>
+
+    <!-- Правая панель управления -->
+    <div class="control-panel">
+        <!-- Текущая локация -->
+        <div class="current-location">
+            <h2>Вокзал</h2>
+            <div class="location-description">
+                Платформа №3. Запах угольной пыли смешивается с чем-то... ненатуральным.
+            </div>
+        </div>
+
+        <!-- Панель перемещения -->
+        <div class="navigation-panel">
+            <h3>Соседние локации:</h3>
+            <div class="connected-locations">
+                <button class="nav-btn" data-target="north_street">
+                    <span class="icon">➤</span> Северная улица
+                </button>
+                <button class="nav-btn" data-target="old_well">
+                    <span class="icon">➤</span> Старый колодец
+                </button>
+            </div>
+        </div>
+
+        <!-- Панель действий -->
+        <div class="actions-panel">
+            <button class="action-btn" data-action="investigate">
+                🔍 Исследовать (1 действие)
+            </button>
+            <button class="action-btn" data-action="attack">
+                ⚔️ Атака (1 действие)
+            </button>
+        </div>
+
+        <!-- Трекер угрозы -->
+        <div class="threat-tracker">
+            <div class="threat-meter">
+                <div class="threat-fill" style="width: 30%"></div>
+            </div>
+            <span class="threat-count">3/10</span>
+        </div>
+    </div>
+</div>

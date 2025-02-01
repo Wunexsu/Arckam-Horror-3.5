@@ -1,0 +1,16 @@
+<!-- Внутри #scenarioSelect -->
+<div class="menu-section">
+    <h3>Режим фазы мифов:</h3>
+    <div class="toggle-container">
+        <label class="toggle-switch">
+            <input type="checkbox" id="mythosModeToggle">
+            <span class="slider"></span>
+        </label>
+        <span class="toggle-label" id="mythosModeLabel">Расширенная фаза мифов</span>
+    </div>
+    <div class="tooltip">?
+        <div class="tooltip-text">
+            Включите для более динамичного режима с лимитом жетонов и спавном монстров
+        </div>
+    </div>
+</div>

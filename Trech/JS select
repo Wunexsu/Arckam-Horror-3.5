@@ -1,0 +1,51 @@
+function loadScenarios() {
+    const wrapper = document.querySelector('.scenarios-wrapper');
+    let delay = 0;
+    
+    for (const [key, scenario] of Object.entries(scenarios)) {
+        const card = document.createElement('div');
+        card.className = 'scenario-card';
+        card.style.animationDelay = `${delay}ms`;
+        card.innerHTML = `
+            <h3 class="scenario-title">${scenario.title}</h3>
+            <div class="scenario-description">${scenario.description}</div>
+            <div class="scenario-label">Старт: ${scenario.startArea}</div>
+        `;
+        
+        card.addEventListener('click', () => selectScenario(key));
+        wrapper.appendChild(card);
+        delay += 150;
+    }
+}
+
+function loadCharacters() {
+    const wrapper = document.querySelector('.characters-wrapper');
+    let delay = 0;
+
+    for (const [key, character] of Object.entries(characters)) {
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        card.style.animationDelay = `${delay}ms`;
+        card.innerHTML = `
+            <div class="character-content">
+                <h2 class="character-title">${character.name}</h2>
+                <div class="character-role">${character.role}</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${character.stats.will}</div>
+                        <div class="stat-name">Воля</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${character.stats.combat}</div>
+                        <div class="stat-name">Бой</div>
+                    </div>
+                    <div class="ability">${character.ability}</div>
+                </div>
+            </div>
+        `;
+        
+        card.addEventListener('click', () => selectCharacter(key));
+        wrapper.appendChild(card);
+        delay += 150;
+    }
+}

@@ -1,0 +1,11 @@
+<!-- Экран выбора сценария -->
+<div id="scenarioSelect" class="screen active">
+    <h1 class="screen-title">Выберите сценарий</h1>
+    <div class="cards-wrapper scenarios-wrapper"></div>
+</div>
+
+<!-- Экран выбора персонажа -->
+<div id="characterSelect" class="screen">
+    <h1 class="screen-title">Выберите персонажа</h1>
+    <div class="cards-wrapper characters-wrapper"></div>
+</div>

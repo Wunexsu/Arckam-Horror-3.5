@@ -1,0 +1,33 @@
+// Добавляем флаг в глобальное состояние
+let gameConfig = {
+    useModifiedMythos: false
+};
+
+// Обработчик переключателя
+document.getElementById('mythosModeToggle').addEventListener('change', function(e) {
+    gameConfig.useModifiedMythos = e.target.checked;
+    document.getElementById('mythosModeLabel').textContent = 
+        this.checked ? "Расширенная фаза мифов" : "Стандартные правила";
+});
+
+// Модифицированная фаза мифов
+function mythosPhase() {
+    if (gameConfig.useModifiedMythos) {
+        // Новая логика с лимитом
+        handleModifiedMythos();
+    } else {
+        // Оригинальная логика из правил
+        handleStandardMythos();
+    }
+}
+
+// Пример стандартной реализации
+function handleStandardMythos() {
+    const tokens = drawMythosTokens(2);
+    tokens.forEach(token => {
+        if (token.type === 'despair') {
+            addDespairToken('global');
+        }
+        // ... остальная логика
+    });
+}

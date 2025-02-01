@@ -1,0 +1,20 @@
+<!-- Внутри #gameBoard -->
+<div class="game-container">
+    <div class="hex-grid" id="hexGrid"></div>
+    <div class="control-panel">
+        <div class="threat-tracker">
+            <span>Уровень угрозы: </span>
+            <div id="threatLevel">0</div>
+        </div>
+        <div class="actions-counter">
+            <button id="endTurn">Завершить ход</button>
+            <span>Осталось действий: </span>
+            <div id="actionsLeft">3</div>
+        </div>
+        <div class="character-status" id="agnesStatus">
+            <h3>Агнес Бейкер</h3>
+            <p>Здоровье: <span id="health">5</span></p>
+            <p>Заклинания: <span id="spells">Буря духов, Защита плоти</span></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+/* Стили боевой системы */
+.combat-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #000000cc;
+    display: none;
+    grid-template-rows: 1fr auto;
+}
+
+.combat-log {
+    color: #f2d492;
+    padding: 20px;
+    font-family: 'Crimson Pro', serif;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.log-entry {
+    margin: 10px 0;
+    padding: 10px;
+    background: #1a142666;
+    border-left: 3px solid #6a5acd;
+}
+
+.combat-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 20px;
+    background: #1a1426dd;
+}
+
+.combat-btn {
+    background: #2d1e15;
+    border: 2px solid #634d32;
+    color: #e0d6c3;
+    padding: 15px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.combat-btn:hover {
+    border-color: #c0a45e;
+    background: #3a291e;
+}
+
+.combat-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Анимации для боевых эффектов */
+@keyframes damage {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); filter: brightness(1.5); }
+    100% { transform: scale(1); }
+}
+
+@keyframes dodge {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-20px); }
+    75% { transform: translateX(20px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes spell {
+    0% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(180deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+.damage-effect {
+    animation: damage 0.5s ease-in-out;
+}
+
+.dodge-effect {
+    animation: dodge 0.5s ease-in-out;
+}
+
+.spell-effect {
+    animation: spell 1s linear;
+} 

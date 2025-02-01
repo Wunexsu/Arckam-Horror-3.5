@@ -1,0 +1,217 @@
+/* Основные стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Crimson Pro', serif;
+    background: #000;
+    color: #e0d6c3;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    background: #0a0806;
+}
+
+/* Верхняя панель */
+.top-panel {
+    background: #1a1426;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #2d1e15;
+}
+
+.character-stats {
+    display: flex;
+    gap: 10px;
+}
+
+.stat-bar {
+    width: 200px;
+    height: 20px;
+    background: #2d1e15;
+    border: 1px solid #634d32;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.health .bar-fill {
+    background: linear-gradient(to right, #4a2b69, #6a5acd);
+}
+
+.sanity .bar-fill {
+    background: linear-gradient(to right, #2d1e15, #4a2b69);
+}
+
+.bar-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 20px;
+    color: #f2d492;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.location-info {
+    text-align: right;
+}
+
+.location-info h2 {
+    color: #f2d492;
+    font-size: 1.8em;
+    margin-bottom: 5px;
+}
+
+.threat-level {
+    color: #c0a45e;
+}
+
+/* Игровая область */
+.game-area {
+    background: url('../Resource/game-background.jpg') center/cover;
+    position: relative;
+}
+
+/* Нижняя часть */
+.bottom-section {
+    display: grid;
+    grid-template-rows: auto auto;
+}
+
+.chat-players-container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    background: #1a1426;
+    border-top: 2px solid #2d1e15;
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid #2d1e15;
+}
+
+.chat-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 5px 5px 0;
+    background: #2d1e15;
+}
+
+.tab-btn {
+    padding: 8px 15px;
+    background: #2d1e15;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    color: #e0d6c3;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #1a1426;
+    color: #f2d492;
+}
+
+.chat-messages {
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.message {
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.players-list {
+    padding: 15px;
+}
+
+.players-list h3 {
+    color: #f2d492;
+    margin-bottom: 10px;
+}
+
+.player {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    border-bottom: 1px solid #2d1e15;
+}
+
+.player-name {
+    color: #e0d6c3;
+}
+
+.player-health {
+    color: #c0a45e;
+}
+
+/* Панель навигации */
+.navigation-panel {
+    background: #1a1426;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    border-top: 2px solid #2d1e15;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    padding: 10px 15px;
+    background: #2d1e15;
+    border: 1px solid #634d32;
+    color: #e0d6c3;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+}
+
+.nav-btn:hover {
+    background: #3a291e;
+    border-color: #f2d492;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    background: #2d1e15;
+    border: 1px solid #634d32;
+    color: #e0d6c3;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    background: #3a291e;
+    border-color: #f2d492;
+} 

@@ -1,0 +1,31 @@
+<div class="game-wrapper">
+    <!-- Основное игровое пространство -->
+    <div class="immersion-layer">
+        <!-- Динамическое фоновое изображение -->
+        <div class="location-canvas" id="locationCanvas">
+            <!-- Интерактивные элементы поверх изображения -->
+            <div class="interactive-clue" style="top: 30%; left: 20%"></div>
+            <div class="hover-monster" style="bottom: 15%; right: 10%"></div>
+        </div>
+    </div>
+    
+    <!-- Правая панель в стиле экспедиционного журнала -->
+    <div class="tactical-panel">
+        <div class="panel-section navigation">
+            <h3>Маршруты</h3>
+            <div class="path-list" id="pathList"></div>
+        </div>
+        
+        <div class="panel-section actions">
+            <h3>Доступные действия</h3>
+            <div class="action-buttons" id="actionButtons"></div>
+        </div>
+        
+        <div class="panel-section occult-tracker">
+            <div class="eldritch-meter">
+                <span class="meter-label">ΣКОЗНИ</span>
+                <div class="meter-fill" id="threatMeter"></div>
+            </div>
+        </div>
+    </div>
+</div>

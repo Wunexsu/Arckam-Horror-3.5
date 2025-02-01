@@ -1,0 +1,53 @@
+class GameInterface {
+    constructor() {
+        this.currentLocation = 'station';
+        this.actionsLeft = 2;
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.moveToLocation(e.target.dataset.target));
+        });
+    }
+
+    moveToLocation(locationId) {
+        if (this.actionsLeft < 1) return;
+        
+        // Анимация перехода
+        document.querySelector('.location-image').style.opacity = '0';
+        setTimeout(() => {
+            this.currentLocation = locationId;
+            this.updateLocationView();
+            this.actionsLeft--;
+            this.updateActionsCounter();
+        }, 500);
+    }
+
+    updateLocationView() {
+        const view = document.querySelector('.location-image');
+        view.dataset.location = this.currentLocation;
+        view.style.opacity = '1';
+        
+        // Обновляем описание локации
+        const locations = {
+            station: {
+                name: "Вокзал",
+                description: "Поезд №317 запаздывает уже на 13 часов..."
+            },
+            north_street: {
+                name: "Северная улица",
+                description: "Фонари мерцают, словно сопротивляясь тьме..."
+            }
+        };
+        
+        document.querySelector('.current-location h2').textContent = locations[this.currentLocation].name;
+        document.querySelector('.location-description').textContent = locations[this.currentLocation].description;
+    }
+
+    updateActionsCounter() {
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.disabled = this.actionsLeft < 1;
+        });
+    }
+}
+
+// Инициализация
+const gameInterface = new GameInterface();

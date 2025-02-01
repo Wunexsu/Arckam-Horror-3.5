@@ -1,0 +1,28 @@
+function handleDistrictContact() {
+    const currentDistrict = gameState.districts[gameState.currentLocation];
+    
+    // Правило 433.4: Вытянуть карту района
+    const drawnCard = drawDistrictCard(currentDistrict.id);
+    
+    // Правило 438.7: Проверка навыка
+    const skillCheckResult = performSkillCheck(drawnCard.skill);
+    
+    // Обработка результатов
+    if (skillCheckResult.success) {
+        executeCardEffect(drawnCard.effects.success);
+    } else {
+        executeCardEffect(drawnCard.effects.failure);
+    }
+}
+
+// Пример карты района
+const districtCards = {
+    station_1: {
+        description: "Вы слышите шепот из темного угла...",
+        skill: "will",
+        effects: {
+            success: "gainClue",
+            failure: "addDespair"
+        }
+    }
+};

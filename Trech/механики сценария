@@ -1,0 +1,19 @@
+function addDespairToken(hexId) {
+    const tile = document.querySelector(`[data-id="${hexId}"]`);
+    const threatDiv = tile.querySelector('.threat') || document.createElement('div');
+    threatDiv.className = 'threat';
+    threatDiv.textContent = `${parseInt(threatDiv.textContent || 0) + 1} угроза`;
+    tile.appendChild(threatDiv);
+} 
+document.querySelectorAll('.hex-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+        if (tile.classList.contains('vortex')) {
+            const success = confirm("Активировать заклинание 'Буря духов'?");
+            if (success) {
+                tile.remove();
+                document.getElementById('threatLevel').textContent = 
+                    parseInt(document.getElementById('threatLevel').textContent) - 1;
+            }
+        }
+    });
+});

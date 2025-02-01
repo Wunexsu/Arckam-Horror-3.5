@@ -1,0 +1,56 @@
+class CombatSystem {
+    constructor() {
+        this.monsterHealth = 5;
+        this.playerHealth = 5;
+        
+        document.querySelectorAll('.combat-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.handleCombatAction(btn.dataset.action));
+        });
+    }
+
+    handleCombatAction(action) {
+        switch(action) {
+            case 'attack':
+                this.resolveAttack();
+                break;
+            case 'dodge':
+                this.resolveDodge();
+                break;
+            case 'spell':
+                this.castSpell();
+                break;
+        }
+    }
+
+    resolveAttack() {
+        const playerRoll = Math.floor(Math.random() * 6) + 1;
+        const monsterRoll = Math.floor(Math.random() * 6) + 1;
+        
+        if (playerRoll > monsterRoll) {
+            this.monsterHealth--;
+            this.addLogEntry("Вы наносите урон!");
+        } else {
+            this.playerHealth--;
+            this.addLogEntry("Монстр контратакует!");
+        }
+        
+        this.updateHealth();
+    }
+
+    addLogEntry(text) {
+        const log = document.querySelector('.combat-log');
+        log.innerHTML += `<div class="log-entry">${text}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    updateHealth() {
+        document.getElementById('playerHealth').textContent = this.playerHealth;
+        document.getElementById('monsterHealth').textContent = this.monsterHealth;
+    }
+}
+
+// Инициализация при вступлении в бой
+function startCombat() {
+    document.querySelector('.combat-overlay').style.display = 'grid';
+    new CombatSystem();
+}

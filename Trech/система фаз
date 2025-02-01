@@ -1,0 +1,6 @@
+// Пример фазы мифов
+function mythPhase() {
+  const mythTokens = ["despair", "monster", "clue"];
+  const drawnToken = mythTokens[Math.floor(Math.random() * mythTokens.length)];
+  handleMythToken(drawnToken); // Обработка эффекта
+}

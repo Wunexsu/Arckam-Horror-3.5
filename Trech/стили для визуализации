@@ -1,0 +1,30 @@
+/* Анимация жетонов безысходности */
+@keyframes despairPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.despair-counter {
+    color: #8b0000;
+    font-size: 1.4em;
+    transition: all 0.3s;
+}
+
+.despair-pulse {
+    animation: despairPulse 0.5s;
+}
+
+.anomaly-active {
+    position: relative;
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('anomaly-effect.png');
+        opacity: 0.6;
+    }
+}

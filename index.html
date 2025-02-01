@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkham Horror</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/game.css">
+    <link rel="stylesheet" href="styles/combat.css">
+</head>
+<body>
+    <!-- Экран выбора сценария -->
+    <div id="scenarioSelect" class="screen active">
+        <h1 class="screen-title">Выберите сценарий</h1>
+        <div class="cards-wrapper scenarios-wrapper"></div>
+        
+        <div class="menu-section">
+            <h3>Режим фазы мифов:</h3>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="mythosModeToggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label" id="mythosModeLabel">Расширенная фаза мифов</span>
+            </div>
+            <div class="tooltip">?
+                <div class="tooltip-text">
+                    Включите для более динамичного режима с лимитом жетонов и спавном монстров
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран выбора персонажа -->
+    <div id="characterSelect" class="screen">
+        <h1 class="screen-title">Выберите персонажа</h1>
+        <div class="cards-wrapper characters-wrapper"></div>
+    </div>
+
+    <!-- Основной игровой экран -->
+    <div id="gameBoard" class="screen">
+        <div class="game-container">
+            <!-- Верхняя панель с информацией о персонаже -->
+            <div class="top-panel">
+                <div class="character-stats">
+                    <div class="stat-bar health">
+                        <div class="bar-fill" style="width: 75%;"></div>
+                        <div class="bar-text">Здоровье: 75%</div>
+                    </div>
+                    <div class="stat-bar sanity">
+                        <div class="bar-fill" style="width: 60%;"></div>
+                        <div class="bar-text">Рассудок: 60%</div>
+                    </div>
+                </div>
+                <div class="location-info">
+                    <h2>Мискатоникский университет</h2>
+                    <div class="threat-level">Уровень угрозы: Средний</div>
+                </div>
+            </div>
+
+            <!-- Основная игровая область -->
+            <div class="game-area">
+                <!-- Здесь будет отображаться игровой контент -->
+            </div>
+
+            <!-- Нижняя секция -->
+            <div class="bottom-section">
+                <!-- Чат и список игроков -->
+                <div class="chat-players-container">
+                    <div class="chat-area">
+                        <div class="chat-tabs">
+                            <button class="tab-btn active">Общий</button>
+                            <button class="tab-btn">Локальный</button>
+                            <button class="tab-btn">Система</button>
+                        </div>
+                        <div class="chat-messages">
+                            <!-- Сообщения чата будут добавляться здесь -->
+                        </div>
+                    </div>
+                    <div class="players-list">
+                        <h3>Игроки поблизости</h3>
+                        <div class="player">
+                            <span class="player-name">Детектив Джон</span>
+                            <span class="player-health">100%</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">Профессор Армитаж</span>
+                            <span class="player-health">85%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Панель навигации -->
+                <div class="navigation-panel">
+                    <div class="nav-buttons">
+                        <button class="nav-btn">Север</button>
+                        <button class="nav-btn">Юг</button>
+                        <button class="nav-btn">Запад</button>
+                        <button class="nav-btn">Восток</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn">🎒</button>
+                        <button class="action-btn">📖</button>
+                        <button class="action-btn">⚔️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Оверлей боевой системы -->
+    <div class="combat-overlay">
+        <div class="combat-log">
+            <div class="log-entry">Безглазый наблюдатель атакует!</div>
+        </div>
+        
+        <div class="combat-actions">
+            <button class="combat-btn" data-action="attack">⚔ Атаковать</button>
+            <button class="combat-btn" data-action="dodge">🔄 Уклониться</button>
+            <button class="combat-btn" data-action="spell">🔮 Заклинание</button>
+        </div>
+    </div>
+
+    <script src="js/data/scenarios.js"></script>
+    <script src="js/data/characters.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/interface.js"></script>
+    <script src="js/combat.js"></script>
+</body>
+</html> 

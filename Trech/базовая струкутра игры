@@ -1,0 +1,24 @@
+// Состояние игры
+const gameState = {
+    despairTokens: 0,
+    districts: {
+        station: {
+            id: "station",
+            name: "Вокзал",
+            connectedTo: ["north_street", "old_well"],
+            despair: 0,
+            clues: 2,
+            hasAnomaly: false
+        },
+        north_street: {
+            id: "north_street",
+            name: "Северная улица",
+            connectedTo: ["station"],
+            despair: 1,
+            clues: 1,
+            hasAnomaly: false
+        }
+    },
+    mythosDeck: [...], // Колода мифов
+    currentLocation: "station"
+};

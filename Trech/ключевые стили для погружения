@@ -1,0 +1,72 @@
+.game-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    height: 100vh;
+    background: #0a0806;
+}
+
+.location-canvas {
+    position: relative;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tactical-panel {
+    background: #1a1426 url('textures/old-leather.jpg');
+    border-left: 3px solid #2d1e15;
+    padding: 20px;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+}
+
+.path-list {
+    display: grid;
+    gap: 12px;
+}
+
+.path-button {
+    background: #2d1e15;
+    border: 1px solid #634d32;
+    padding: 14px;
+    color: #e0d6c3;
+    font-family: 'Crimson Pro', serif;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.path-button:hover {
+    border-color: #927556;
+    background: #3a291e;
+}
+
+.path-button::before {
+    content: '➜';
+    margin-right: 12px;
+    color: #927556;
+}
+
+.eldritch-meter {
+    background: #2d1e15;
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4a2b69 0%, #8b0000 100%);
+    transition: width 0.5s ease;
+}
+
+.meter-label {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #f2d492;
+    mix-blend-mode: overlay;
+}

@@ -1,0 +1,15 @@
+function processMythosToken(token) {
+    if (scenarioSettings.useModifiedMythos) {
+        // Логика с лимитом
+        if (gameState.currentRoundTokens >= 3) {
+            spawnMonster();
+            return;
+        }
+        gameState.currentRoundTokens++;
+    }
+    
+    // Общая логика
+    switch(token.type) {
+        // ...
+    }
+}

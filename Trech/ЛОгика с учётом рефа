@@ -1,0 +1,33 @@
+class EldritchInterface {
+    constructor() {
+        this.actions = 2;
+        this.sanity = 80;
+        
+        document.querySelectorAll('.path-option').forEach(btn => {
+            btn.addEventListener('click', () => this.handleNavigation(btn));
+        });
+    }
+
+    handleNavigation(button) {
+        if (this.actions < 1) return;
+        
+        // Анимация перехода
+        button.style.opacity = '0.5';
+        setTimeout(() => {
+            this.actions -= parseInt(button.textContent.match(/\((\d+) действие/)[1]);
+            button.style.opacity = '1';
+            this.updateUI();
+        }, 1000);
+    }
+
+    updateUI() {
+        document.querySelectorAll('.action-btn')
+            .forEach(btn => btn.disabled = this.actions < 1);
+        
+        document.querySelector('.sanity-tracker .tracker-bar')
+            .style.height = `${this.sanity}%`;
+    }
+}
+
+// Инициализация
+new EldritchInterface();

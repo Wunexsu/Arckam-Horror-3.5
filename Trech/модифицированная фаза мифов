@@ -1,0 +1,123 @@
+// 1. Обновляем структуру данных
+const gameState = {
+    mythosPool: [],       // Текущие жетоны в мешке
+    mythosDiscard: [],    // Сброшенные жетоны
+    despairTokens: 0,     // Жетоны на листе сценария
+    currentRoundTokens: 0,// Лимит за раунд
+    players: [
+        { id: 1, isLeader: true, mythosTokens: [] },
+        { id: 2, isLeader: false, mythosTokens: [] }
+    ],
+    monsters: []
+};
+
+// 2. Новый механизм фазы мифов
+function mythosPhase() {
+    // Сброс счетчика
+    gameState.currentRoundTokens = 0;
+
+    // Распределение жетонов
+    const leader = gameState.players.find(p => p.isLeader);
+    const otherPlayers = gameState.players.filter(p => !p.isLeader);
+
+    // Лидер берет 2
+    leader.mythosTokens.push(...drawMythosTokens(2));
+
+    // Выбранный игрок берет 2
+    if (otherPlayers.length > 0) {
+        const selectedPlayer = otherPlayers[0];
+        selectedPlayer.mythosTokens.push(...drawMythosTokens(2));
+    }
+
+    // Остальные по 1
+    otherPlayers.slice(1).forEach(player => {
+        player.mythosTokens.push(...drawMythosTokens(1));
+    });
+
+    // Разыгрывание по порядку
+    gameState.players.forEach(player => {
+        player.mythosTokens.forEach(token => {
+            processMythosToken(token, player);
+        });
+        player.mythosTokens = [];
+    });
+}
+
+// 3. Функция обработки жетона
+function processMythosToken(token, player) {
+    if (gameState.currentRoundTokens >= 3) {
+        // Превышен лимит - спавн монстра
+        spawnMonster(token);
+        return;
+    }
+
+    switch(token.type) {
+        case 'despair':
+            if (gameState.currentRoundTokens < 3) {
+                gameState.despairTokens++;
+                gameState.currentRoundTokens++;
+            } else {
+                spawnMonster(token);
+            }
+            break;
+        
+        case 'gate':
+            handleGateBreach(token);
+            gameState.mythosDiscard.push(token);
+            break;
+        
+        case 'monster':
+            spawnMonster(token);
+            gameState.mythosDiscard.push(token);
+            break;
+    }
+}
+
+// 4. Вспомогательные функции
+function drawMythosTokens(count) {
+    if (gameState.mythosPool.length < count) {
+        // Возвращаем сброс в пул
+        gameState.mythosPool.push(...gameState.mythosDiscard);
+        gameState.mythosDiscard = [];
+        shuffle(gameState.mythosPool);
+    }
+    return gameState.mythosPool.splice(0, count);
+}
+
+function spawnMonster(token) {
+    const monster = {
+        id: Date.now(),
+        type: token.monsterType || 'generic',
+        health: 3,
+        location: player.currentLocation
+    };
+    gameState.monsters.push(monster);
+    updateMonsterDisplay(monster);
+}
+
+// 5. Визуальное обновление
+function updateMonsterDisplay(monster) {
+    const locationElement = document.querySelector(`#${monster.location}`);
+    const monsterElement = document.createElement('div');
+    monsterElement.className = `monster ${monster.type}`;
+    monsterElement.innerHTML = `
+        <div class="health">${monster.health}</div>
+        <div class="type-icon"></div>
+    `;
+    locationElement.appendChild(monsterElement);
+}
+
+// 6. Стили для монстров
+.monster {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    background: url('monster-sprite.png');
+    animation: appear 0.5s;
+    z-index: 100;
+}
+
+@keyframes appear {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}

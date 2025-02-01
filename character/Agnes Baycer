@@ -1,0 +1,14 @@
+const characters = {
+    "agnes": {
+        name: "Агнес Бейкер",
+        role: "Мистик",
+        stats: {
+            will: 3,
+            combat: 2,
+            intellect: 4,
+            agility: 2
+        },
+        ability: "Кровавые чары: получать урон вместо ужаса при чтении заклинаний",
+        inventory: ["Гиперборейская реликвия", "$3"]
+    }
+};
