@@ -1,6 +1,24 @@
 import { ROLE_TEMPLATES, DEFAULT_ITEMS, CHARACTER_ABILITIES } from './characterTemplates.js';
 import { MONSTER_TEMPLATES, MONSTER_ACTIVATIONS, MONSTER_ABILITIES } from './monsterTemplates.js';
 
+// Вспомогательная функция для получения базовых предметов
+function getBaseItems(roleTemplate, defaultItems) {
+    return {
+        inventory: [...roleTemplate.baseInventory, `$${defaultItems.money}`],
+        spells: [...(roleTemplate.baseSpells || []), ...(defaultItems.spells || [])],
+        items: [...(roleTemplate.baseItems || []), ...(defaultItems.items || [])]
+    };
+}
+
+// Вспомогательная функция для объединения предметов
+function mergeItems(baseItems, configItems) {
+    return {
+        inventory: [...baseItems.inventory, ...(configItems.inventory || [])],
+        spells: [...baseItems.spells, ...(configItems.spells || [])],
+        items: [...baseItems.items, ...(configItems.items || [])]
+    };
+}
+
 // Фабричная функция для создания персонажа
 function createCharacter(config) {
     const roleTemplate = ROLE_TEMPLATES[config.roleType];
@@ -11,29 +29,15 @@ function createCharacter(config) {
         return null;
     }
 
+    const baseItems = getBaseItems(roleTemplate, defaultItems);
+    const items = mergeItems(baseItems, config);
+
     return {
         name: config.name,
         role: config.role,
-        stats: {
-            ...roleTemplate.stats,
-            ...config.stats
-        },
+        stats: { ...roleTemplate.stats, ...config.stats },
         ability: config.ability,
-        inventory: [
-            ...roleTemplate.baseInventory,
-            `$${defaultItems.money}`,
-            ...(config.inventory || [])
-        ],
-        spells: [
-            ...(roleTemplate.baseSpells || []),
-            ...(defaultItems.spells || []),
-            ...(config.spells || [])
-        ],
-        items: [
-            ...(roleTemplate.baseItems || []),
-            ...(defaultItems.items || []),
-            ...(config.items || [])
-        ]
+        ...items
     };
 }
 
