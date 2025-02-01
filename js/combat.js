@@ -1,7 +1,74 @@
+// Базовый класс для команд
+class CombatCommand {
+    constructor(combat) {
+        this.combat = combat;
+    }
+    
+    execute() {
+        throw new Error('Метод execute должен быть реализован');
+    }
+}
+
+// Команда атаки
+class AttackCommand extends CombatCommand {
+    execute() {
+        const playerRoll = this.combat.rollDice() + this.combat.playerCharacter.stats.combat;
+        const monsterRoll = this.combat.rollDice() + this.combat.currentMonster.attackMod;
+
+        if (playerRoll > monsterRoll) {
+            this.combat.currentMonster.currentHealth--;
+            this.combat.addLogEntry("Вы наносите урон!", 'player-hit');
+            document.querySelector('.combat-overlay').classList.add('damage-effect');
+        } else {
+            this.combat.playerCharacter.health--;
+            this.combat.addLogEntry("Монстр контратакует!", 'monster-hit');
+        }
+
+        this.combat.updateHealth();
+    }
+}
+
+// Команда уклонения
+class DodgeCommand extends CombatCommand {
+    execute() {
+        const successRoll = this.combat.rollDice() + this.combat.playerCharacter.stats.agility;
+        
+        if (successRoll >= 4) {
+            this.combat.addLogEntry("Вы успешно уклоняетесь!", 'dodge-success');
+            document.querySelector('.combat-overlay').classList.add('dodge-effect');
+        } else {
+            this.combat.playerCharacter.health--;
+            this.combat.addLogEntry("Уклонение не удалось!", 'dodge-fail');
+        }
+
+        this.combat.updateHealth();
+    }
+}
+
+// Команда заклинания
+class SpellCommand extends CombatCommand {
+    execute() {
+        if (!this.combat.hasAvailableSpells()) {
+            this.combat.addLogEntry("У вас нет доступных заклинаний!", 'no-spells');
+            return;
+        }
+
+        const spell = this.combat.playerCharacter.spells[0];
+        const spellResult = this.combat.resolveSpellCast(spell);
+        this.combat.applySpellEffects(spellResult, spell);
+        this.combat.updateHealth();
+    }
+}
+
 class CombatSystem {
     constructor() {
         this.currentMonster = null;
         this.playerCharacter = gameState.players[0];
+        this.commands = {
+            'attack': new AttackCommand(this),
+            'dodge': new DodgeCommand(this),
+            'spell': new SpellCommand(this)
+        };
         this.setupCombat();
         this.bindEvents();
     }
@@ -25,96 +92,12 @@ class CombatSystem {
     }
 
     handleCombatAction(action) {
-        switch(action) {
-            case 'attack':
-                this.resolveAttack();
-                break;
-            case 'dodge':
-                this.resolveDodge();
-                break;
-            case 'spell':
-                this.castSpell();
-                break;
-        }
-
-        // Проверяем состояние боя после каждого действия
-        this.checkCombatState();
-    }
-
-    resolveAttack() {
-        const playerRoll = this.rollDice() + this.playerCharacter.stats.combat;
-        const monsterRoll = this.rollDice() + this.currentMonster.attackMod;
-
-        if (playerRoll > monsterRoll) {
-            this.currentMonster.currentHealth--;
-            this.addLogEntry("Вы наносите урон!", 'player-hit');
-            document.querySelector('.combat-overlay').classList.add('damage-effect');
+        const command = this.commands[action];
+        if (command) {
+            command.execute();
+            this.checkCombatState();
         } else {
-            this.playerCharacter.health--;
-            this.addLogEntry("Монстр контратакует!", 'monster-hit');
-        }
-
-        this.updateHealth();
-    }
-
-    resolveDodge() {
-        const successRoll = this.rollDice() + this.playerCharacter.stats.agility;
-        
-        if (successRoll >= 4) {
-            this.addLogEntry("Вы успешно уклоняетесь!", 'dodge-success');
-            document.querySelector('.combat-overlay').classList.add('dodge-effect');
-        } else {
-            this.playerCharacter.health--;
-            this.addLogEntry("Уклонение не удалось!", 'dodge-fail');
-        }
-
-        this.updateHealth();
-    }
-
-    castSpell() {
-        if (!this.hasAvailableSpells()) {
-            this.addLogEntry("У вас нет доступных заклинаний!", 'no-spells');
-            return;
-        }
-
-        const spell = this.playerCharacter.spells[0];
-        const spellResult = this.resolveSpellCast(spell);
-        this.applySpellEffects(spellResult, spell);
-        this.updateHealth();
-    }
-
-    hasAvailableSpells() {
-        return this.playerCharacter.spells && this.playerCharacter.spells.length > 0;
-    }
-
-    resolveSpellCast(spell) {
-        const willCheck = this.rollDice() + this.playerCharacter.stats.will;
-        return {
-            isSuccess: willCheck >= 4,
-            spell: spell
-        };
-    }
-
-    applySpellEffects(result, spell) {
-        if (result.isSuccess) {
-            this.applySuccessfulSpell(spell);
-        } else {
-            this.applyFailedSpell();
-        }
-    }
-
-    applySuccessfulSpell(spell) {
-        this.currentMonster.currentHealth -= 2;
-        this.addLogEntry(`Вы успешно применяете ${spell}!`, 'spell-success');
-        document.querySelector('.combat-overlay').classList.add('spell-effect');
-    }
-
-    applyFailedSpell() {
-        if (this.playerCharacter.ability === "Кровавые чары") {
-            this.playerCharacter.health--;
-            this.addLogEntry("Кровавые чары: получен урон вместо ужаса", 'blood-magic');
-        } else {
-            this.addLogEntry("Заклинание вышло из-под контроля!", 'spell-fail');
+            console.error(`Неизвестное действие: ${action}`);
         }
     }
 
@@ -168,6 +151,42 @@ class CombatSystem {
     selectRandomMonster() {
         const monsterTypes = Object.keys(monsters);
         return monsterTypes[Math.floor(Math.random() * monsterTypes.length)];
+    }
+
+    // Вспомогательные методы для команд
+    hasAvailableSpells() {
+        return this.playerCharacter.spells && this.playerCharacter.spells.length > 0;
+    }
+
+    resolveSpellCast(spell) {
+        const willCheck = this.rollDice() + this.playerCharacter.stats.will;
+        return {
+            isSuccess: willCheck >= 4,
+            spell: spell
+        };
+    }
+
+    applySpellEffects(result, spell) {
+        if (result.isSuccess) {
+            this.applySuccessfulSpell(spell);
+        } else {
+            this.applyFailedSpell();
+        }
+    }
+
+    applySuccessfulSpell(spell) {
+        this.currentMonster.currentHealth -= 2;
+        this.addLogEntry(`Вы успешно применяете ${spell}!`, 'spell-success');
+        document.querySelector('.combat-overlay').classList.add('spell-effect');
+    }
+
+    applyFailedSpell() {
+        if (this.playerCharacter.ability === "Кровавые чары") {
+            this.playerCharacter.health--;
+            this.addLogEntry("Кровавые чары: получен урон вместо ужаса", 'blood-magic');
+        } else {
+            this.addLogEntry("Заклинание вышло из-под контроля!", 'spell-fail');
+        }
     }
 }
 

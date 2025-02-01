@@ -1,5 +1,71 @@
+// Базовый класс для игровых команд
+class GameCommand {
+    constructor(interface) {
+        this.interface = interface;
+    }
+    
+    execute() {
+        if (gameState.actionsLeft < 1) {
+            this.interface.showMessage("Не осталось действий!");
+            return false;
+        }
+        
+        const result = this.performAction();
+        if (result !== false) {
+            gameState.actionsLeft--;
+            this.interface.updateActionButtons();
+        }
+        return result;
+    }
+
+    performAction() {
+        throw new Error('Метод performAction должен быть реализован');
+    }
+}
+
+// Команда исследования
+class InvestigateCommand extends GameCommand {
+    performAction() {
+        const currentDistrict = gameState.districts[gameState.currentLocation];
+        if (currentDistrict.clues > 0) {
+            currentDistrict.clues--;
+            this.interface.showMessage("Найдена улика!");
+            this.interface.updateDistrictView();
+            return true;
+        } else {
+            this.interface.showMessage("Здесь больше нет улик.");
+            return false;
+        }
+    }
+}
+
+// Команда начала боя
+class CombatCommand extends GameCommand {
+    performAction() {
+        document.querySelector('.combat-overlay').style.display = 'grid';
+        new CombatSystem();
+        return true;
+    }
+}
+
+// Команда отдыха
+class RestCommand extends GameCommand {
+    performAction() {
+        const character = gameState.players[0];
+        character.health = Math.min(character.health + 1, character.maxHealth);
+        this.interface.showMessage("Восстановлено 1 здоровье");
+        this.interface.updateCharacterStatus();
+        return true;
+    }
+}
+
 class EldritchInterface {
     constructor() {
+        this.commands = {
+            'investigate': new InvestigateCommand(this),
+            'combat': new CombatCommand(this),
+            'rest': new RestCommand(this)
+        };
         this.bindEvents();
         this.setupActionButtons();
     }
@@ -17,16 +83,13 @@ class EldritchInterface {
     setupActionButtons() {
         const actionButtons = {
             investigate: {
-                icon: '🔍',
-                handler: () => this.investigate()
+                icon: '🔍'
             },
             combat: {
-                icon: '⚔',
-                handler: () => this.startCombat()
+                icon: '⚔'
             },
             rest: {
-                icon: '🕯',
-                handler: () => this.rest()
+                icon: '🕯'
             }
         };
 
@@ -34,66 +97,39 @@ class EldritchInterface {
             const action = btn.dataset.action;
             if (actionButtons[action]) {
                 btn.innerHTML = actionButtons[action].icon;
-                btn.addEventListener('click', actionButtons[action].handler);
             }
         });
     }
 
     handleAction(action) {
-        if (gameState.actionsLeft < 1) {
-            this.showMessage("Не осталось действий!");
-            return;
-        }
-
-        switch(action) {
-            case 'investigate':
-                this.investigate();
-                break;
-            case 'combat':
-                this.startCombat();
-                break;
-            case 'rest':
-                this.rest();
-                break;
-        }
-
-        gameState.actionsLeft--;
-        this.updateActionCounter();
-    }
-
-    investigate() {
-        const currentDistrict = gameState.districts[gameState.currentLocation];
-        if (currentDistrict.clues > 0) {
-            currentDistrict.clues--;
-            this.showMessage("Найдена улика!");
-            this.updateDistrictView();
+        const command = this.commands[action];
+        if (command) {
+            command.execute();
         } else {
-            this.showMessage("Здесь больше нет улик.");
+            console.error(`Неизвестное действие: ${action}`);
         }
     }
 
-    startCombat() {
-        document.querySelector('.combat-overlay').style.display = 'grid';
-        new CombatSystem();
-    }
-
-    rest() {
-        const character = gameState.players[0];
-        character.health = Math.min(character.health + 1, character.maxHealth);
-        this.showMessage("Восстановлено 1 здоровье");
-        this.updateCharacterStatus();
+    // Общая функция для обновления состояния кнопок действий
+    updateActionButtons() {
+        const buttons = document.querySelectorAll('.action-btn');
+        const disabled = gameState.actionsLeft < 1;
+        
+        buttons.forEach(btn => {
+            btn.disabled = disabled;
+            // Добавляем визуальный класс для отключенных кнопок
+            if (disabled) {
+                btn.classList.add('disabled');
+            } else {
+                btn.classList.remove('disabled');
+            }
+        });
     }
 
     endTurn() {
         gameState.actionsLeft = 3;
-        this.updateActionCounter();
+        this.updateActionButtons();
         mythosPhase();
-    }
-
-    updateActionCounter() {
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.disabled = gameState.actionsLeft < 1;
-        });
     }
 
     updateDistrictView() {
