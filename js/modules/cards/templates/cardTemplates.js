@@ -1,3 +1,22 @@
+import { items } from '../../../data/characters.js';
+
+// Шаблон для предмета с подсказкой
+const itemWithTooltip = (itemName) => {
+    const item = items[itemName];
+    if (item) {
+        return `
+            <div class="item-with-tooltip">
+                <span class="item-name">${itemName}</span>
+                <div class="item-tooltip">
+                    <div class="item-type">${item.type}</div>
+                    <div class="item-description">${item.description}</div>
+                </div>
+            </div>
+        `;
+    }
+    return itemName;
+};
+
 // Шаблоны для карточек
 export const cardTemplates = {
     statBox: (label, value) => `
@@ -38,12 +57,76 @@ export const cardTemplates = {
         <div class="character-card" data-character="${character.id}">
             <div class="character-content">
                 <div class="character-portrait" style="background-image: url('images/characters/${character.id}.jpg')"></div>
-                <h2 class="character-title">${character.name}</h2>
-                <div class="character-role">${character.role}</div>
-                <div class="stats-grid">
-                    ${cardTemplates.statItem(character.stats.will, 'Воля')}
-                    ${cardTemplates.statItem(character.stats.combat, 'Бой')}
-                    <div class="ability">${character.ability}</div>
+                <div class="character-info">
+                    <h2 class="character-title">${character.name}</h2>
+                    <div class="character-role">${character.role}</div>
+                    
+                    <div class="character-abilities">
+                        <div class="ability-primary">
+                            <span class="ability-name">${character.ability.name}:</span>
+                            ${character.ability.description}
+                        </div>
+                        <div class="ability-secondary">
+                            <span class="ability-name">${character.secondaryAbility.name}:</span>
+                            ${character.secondaryAbility.description}
+                        </div>
+                        <div class="character-quote">"${character.quote}"</div>
+                    </div>
+
+                    <div class="character-stats">
+                        <div class="stat-row">
+                            <div class="stat-value">${character.stats.health}</div>
+                            <div class="stat-icon health"></div>
+                            <div class="stat-value">${character.stats.sanity}</div>
+                            <div class="stat-icon sanity"></div>
+                        </div>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <div class="stat-value">${character.stats.knowledge}</div>
+                                <div class="stat-icon knowledge"></div>
+                                <div class="stat-name">Знания</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${character.stats.influence}</div>
+                                <div class="stat-icon influence"></div>
+                                <div class="stat-name">Общение</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${character.stats.observation}</div>
+                                <div class="stat-icon observation"></div>
+                                <div class="stat-name">Внимание</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${character.stats.strength}</div>
+                                <div class="stat-icon strength"></div>
+                                <div class="stat-name">Сила</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${character.stats.will}</div>
+                                <div class="stat-icon will"></div>
+                                <div class="stat-name">Воля</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-items">
+                        <div class="default-items">
+                            <h3>Стартовое имущество:</h3>
+                            <ul>
+                                ${character.defaultItems.map(item => `<li>${itemWithTooltip(item)}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="choice-items">
+                            <h3>Выберите одно:</h3>
+                            <div class="item-choices">
+                                ${character.choiceItems.map(item => `
+                                    <button class="item-choice" data-item="${item}">
+                                        ${itemWithTooltip(item)}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

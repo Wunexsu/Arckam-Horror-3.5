@@ -7,14 +7,34 @@ function createCharacterCard(characterId, character) {
     cardElement.innerHTML = cardTemplates.characterCard(character);
     const card = cardElement.firstElementChild;
     
+    // Добавляем обработчики для выбора предметов
+    const itemButtons = card.querySelectorAll('.item-choice');
+    itemButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Убираем выделение со всех кнопок
+            itemButtons.forEach(btn => btn.classList.remove('selected'));
+            // Добавляем выделение на выбранную кнопку
+            button.classList.add('selected');
+            
+            // Создаем событие выбора предмета
+            const selectItemEvent = new CustomEvent('itemSelected', {
+                detail: {
+                    characterId,
+                    itemName: button.dataset.item
+                }
+            });
+            document.dispatchEvent(selectItemEvent);
+        });
+    });
+    
     // Добавляем эффекты при наведении
     card.addEventListener('mouseenter', () => {
-        card.style.transform = 'translateY(-5px)';
+        card.style.transform = 'scale(1.02)';
         card.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.5)';
     });
     
     card.addEventListener('mouseleave', () => {
-        card.style.transform = 'translateY(0)';
+        card.style.transform = 'scale(1)';
         card.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
     });
     
