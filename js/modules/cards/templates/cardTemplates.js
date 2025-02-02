@@ -35,14 +35,16 @@ export const cardTemplates = {
     `,
 
     characterCard: (character) => `
-        <div class="character-content">
-            <div class="character-portrait" style="background-image: url('images/characters/${character.id}.jpg')"></div>
-            <h2 class="character-title">${character.name}</h2>
-            <div class="character-role">${character.role}</div>
-            <div class="stats-grid">
-                ${cardTemplates.statItem(character.stats.will, 'Воля')}
-                ${cardTemplates.statItem(character.stats.combat, 'Бой')}
-                <div class="ability">${character.ability}</div>
+        <div class="character-card" data-character="${character.id}">
+            <div class="character-content">
+                <div class="character-portrait" style="background-image: url('images/characters/${character.id}.jpg')"></div>
+                <h2 class="character-title">${character.name}</h2>
+                <div class="character-role">${character.role}</div>
+                <div class="stats-grid">
+                    ${cardTemplates.statItem(character.stats.will, 'Воля')}
+                    ${cardTemplates.statItem(character.stats.combat, 'Бой')}
+                    <div class="ability">${character.ability}</div>
+                </div>
             </div>
         </div>
     `

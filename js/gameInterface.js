@@ -206,5 +206,53 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Управление интерфейсом игры
+import { loadCharacters } from './modules/cards/character.js';
+import { loadScenarios } from './modules/cards/scenario.js';
+
+// Функция для переключения экранов
+function showScreen(screenId) {
+    // Скрываем все экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    
+    // Показываем нужный экран
+    const screen = document.getElementById(screenId);
+    if (screen) {
+        screen.classList.add('active');
+    }
+}
+
+// Инициализация интерфейса
+function initInterface() {
+    console.log('Инициализация интерфейса...');
+    
+    // Загружаем сценарии и персонажей
+    loadScenarios();
+    loadCharacters();
+    
+    // Обработчик выбора персонажа
+    document.addEventListener('characterSelected', (e) => {
+        const characterId = e.detail.characterId;
+        console.log('Выбран персонаж:', characterId);
+        // Здесь можно добавить дополнительную логику
+    });
+    
+    // Обработчик выбора сценария
+    document.addEventListener('scenarioSelected', (e) => {
+        const scenarioId = e.detail.scenarioId;
+        console.log('Выбран сценарий:', scenarioId);
+        showScreen('characterSelect');
+    });
+    
+    console.log('Интерфейс инициализирован');
+}
+
+// Запускаем инициализацию при загрузке страницы
+document.addEventListener('DOMContentLoaded', initInterface);
+
+export { showScreen };
+
 // Инициализация интерфейса
 const gameInterface = new EldritchInterface(); 

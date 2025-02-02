@@ -12,6 +12,8 @@ export class CardEffectsManager {
             [EffectTypes.ACTIVE]: false
         });
 
+        this.effects = new Set();
+
         this.bindEvents();
     }
 
@@ -67,5 +69,45 @@ export class CardEffectsManager {
 
     updateEffects(newEffects) {
         this.setEffects(newEffects);
+    }
+
+    // Добавление эффекта при наведении
+    addHoverEffect() {
+        const hoverEffect = {
+            onMouseEnter: () => {
+                this.element.style.transform = 'translateY(-5px)';
+                this.element.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.5)';
+            },
+            onMouseLeave: () => {
+                this.element.style.transform = 'translateY(0)';
+                this.element.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+            }
+        };
+
+        this.element.addEventListener('mouseenter', hoverEffect.onMouseEnter);
+        this.element.addEventListener('mouseleave', hoverEffect.onMouseLeave);
+        
+        this.effects.add(hoverEffect);
+        return this;
+    }
+
+    // Добавление эффекта выделения
+    addSelectionEffect() {
+        const selectionEffect = {
+            onClick: () => {
+                this.element.classList.toggle('selected');
+            }
+        };
+
+        this.element.addEventListener('click', selectionEffect.onClick);
+        
+        this.effects.add(selectionEffect);
+        return this;
+    }
+
+    // Очистка всех эффектов
+    clearEffects() {
+        this.effects.clear();
+        return this;
     }
 } 

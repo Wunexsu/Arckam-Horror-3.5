@@ -64,6 +64,22 @@ function createMonster(config) {
 
 // Данные персонажей
 export const characters = {
+    agnes: {
+        id: 'agnes',
+        name: 'Агнес Бейкер',
+        role: 'Ведьма',
+        stats: {
+            will: 5,
+            combat: 2,
+            maxHealth: 5,
+            maxSanity: 9,
+            health: 5,
+            sanity: 9
+        },
+        ability: 'Может использовать заклинания без потери рассудка',
+        inventory: [],
+        effects: []
+    },
     detective: {
         id: 'detective',
         name: 'Детектив Джон',

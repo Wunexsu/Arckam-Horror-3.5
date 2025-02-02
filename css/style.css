@@ -1,23 +1,53 @@
 .character-card {
-    background-image: url('../images/ui/card-background.jpg');
-    background-size: cover;
-    /* ... остальные стили ... */
+    width: 300px;
+    height: 400px;
+    background-color: #1a1a1a;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
 }
 
 .character-content {
-    background-color: rgba(0, 0, 0, 0.7);
-    /* ... остальные стили ... */
+    position: relative;
+    height: 100%;
+    padding: 20px;
+    background: linear-gradient(
+        rgba(0, 0, 0, 0.2) 0%,
+        rgba(0, 0, 0, 0.6) 50%,
+        rgba(0, 0, 0, 0.9) 100%
+    );
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Добавляем стили для изображений персонажей */
 .character-portrait {
     width: 200px;
-    height: 300px;
+    height: 250px;
     background-size: cover;
-    background-position: center;
-    margin-bottom: 1rem;
+    background-position: top center;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+[data-character="agnes"] .character-portrait {
+    background-position: center 20%;
+}
+
+.character-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+.character-card:hover .character-portrait {
+    border-color: rgba(255, 215, 0, 0.6);
+    box-shadow: 0 6px 12px rgba(255, 215, 0, 0.2);
 }
 
 .card-content {
@@ -147,4 +177,45 @@
     font-size: 20px;
     font-weight: bold;
     color: #fff;
+}
+
+.characters-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+    flex-wrap: wrap;
+}
+
+.character-title {
+    font-size: 24px;
+    color: #ffd700;
+    margin-bottom: 5px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.character-role {
+    font-size: 18px;
+    color: #c0a45e;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.ability {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #e0d6c3;
 } 
