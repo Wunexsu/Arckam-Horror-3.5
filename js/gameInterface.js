@@ -218,39 +218,35 @@ function showScreen(screenId) {
     });
     
     // Показываем нужный экран
-    const screen = document.getElementById(screenId);
-    if (screen) {
-        screen.classList.add('active');
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+        
+        // Если это экран выбора персонажа, загружаем персонажей
+        if (screenId === 'characterSelect') {
+            loadCharacters();
+        }
     }
 }
 
-// Инициализация интерфейса
-function initInterface() {
-    console.log('Инициализация интерфейса...');
-    
-    // Загружаем сценарии и персонажей
-    loadScenarios();
-    loadCharacters();
+// Обработчики событий
+document.addEventListener('DOMContentLoaded', () => {
+    // Показываем экран выбора персонажа при загрузке
+    showScreen('characterSelect');
     
     // Обработчик выбора персонажа
-    document.addEventListener('characterSelected', (e) => {
-        const characterId = e.detail.characterId;
-        console.log('Выбран персонаж:', characterId);
-        // Здесь можно добавить дополнительную логику
+    document.addEventListener('characterSelected', (event) => {
+        const { characterId } = event.detail;
+        console.log(`Выбран персонаж: ${characterId}`);
+        // Здесь можно добавить логику перехода к следующему экрану
     });
     
-    // Обработчик выбора сценария
-    document.addEventListener('scenarioSelected', (e) => {
-        const scenarioId = e.detail.scenarioId;
-        console.log('Выбран сценарий:', scenarioId);
-        showScreen('characterSelect');
+    // Обработчик выбора предмета
+    document.addEventListener('itemSelected', (event) => {
+        const { characterId, itemName } = event.detail;
+        console.log(`Выбран предмет ${itemName} для персонажа ${characterId}`);
     });
-    
-    console.log('Интерфейс инициализирован');
-}
-
-// Запускаем инициализацию при загрузке страницы
-document.addEventListener('DOMContentLoaded', initInterface);
+});
 
 export { showScreen };
 

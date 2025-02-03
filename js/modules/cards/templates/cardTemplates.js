@@ -66,10 +66,12 @@ export const cardTemplates = {
                             <span class="ability-name">${character.ability.name}:</span>
                             ${character.ability.description}
                         </div>
-                        <div class="ability-secondary">
-                            <span class="ability-name">${character.secondaryAbility.name}:</span>
-                            ${character.secondaryAbility.description}
-                        </div>
+                        ${character.secondaryAbility ? `
+                            <div class="ability-secondary">
+                                <span class="ability-name">${character.secondaryAbility.name}:</span>
+                                ${character.secondaryAbility.description}
+                            </div>
+                        ` : ''}
                         <div class="character-quote">"${character.quote}"</div>
                     </div>
 

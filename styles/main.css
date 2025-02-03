@@ -10,11 +10,8 @@ body {
 
 .screen {
     display: none;
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    background: #0a0806;
 }
 
 .screen.active {
@@ -24,10 +21,10 @@ body {
 /* Стили для экрана выбора */
 .screen-title {
     text-align: center;
-    color: #f2d492;
-    font-size: 2.5em;
-    margin-bottom: 40px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #ffd700;
+    margin: 20px 0;
+    font-size: 36px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .menu-section {
@@ -309,9 +306,40 @@ input:checked + .slider:before {
     text-align: center;
 }
 
-/* Стили для карточек персонажей */
+/* Экран выбора персонажей */
+#characterSelect {
+    min-height: 100vh;
+    padding: 20px;
+    background: #0a0806;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.characters-container {
+    flex: 1;
+    overflow: hidden;
+    padding: 20px 0;
+    cursor: grab;
+}
+
+.characters-container:active {
+    cursor: grabbing;
+}
+
+.characters-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 0 20px;
+    min-height: 600px;
+    transform: translateX(0);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+}
+
 .character-card {
-    width: 800px;
+    flex: 0 0 900px;
     min-height: 400px;
     background-color: #1a1a1a;
     border-radius: 15px;
@@ -322,21 +350,63 @@ input:checked + .slider:before {
     position: relative;
     animation: fadeInUp 0.5s ease forwards;
     opacity: 0;
-    display: flex;
+    user-select: none;
+    border: 2px solid #634d32;
+}
+
+.character-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid #c0a45e;
+    border-radius: 13px;
+    pointer-events: none;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.character-card:hover::before {
+    opacity: 0.6;
+}
+
+.character-card.active {
+    border-color: #ffd700;
+}
+
+.character-card.active::before {
+    border-color: #ffd700;
+    opacity: 0.8;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
 
 .character-content {
     display: flex;
     width: 100%;
+    background: linear-gradient(to right,
+        rgba(26, 20, 35, 0.9) 0%,
+        rgba(26, 20, 35, 0.95) 100%
+    );
 }
 
 .character-portrait {
-    width: 300px;
+    flex: 0 0 300px;
     height: 400px;
     background-size: cover;
-    background-position: center top;
+    background-position: center;
     background-repeat: no-repeat;
-    position: relative;
+}
+
+[data-character="agnes"] .character-portrait {
+    background-image: url('../images/characters/agnes.jpg');
+    background-position: center 20%;
+}
+
+[data-character="tommy"] .character-portrait {
+    background-image: url('../images/characters/tommy.jpg');
+    background-position: center;
 }
 
 .character-info {
@@ -347,6 +417,8 @@ input:checked + .slider:before {
         rgba(26, 20, 35, 0.95) 100%
     );
     color: #e0d6c3;
+    display: flex;
+    flex-direction: column;
 }
 
 .character-title {
@@ -450,22 +522,22 @@ input:checked + .slider:before {
 }
 
 .item-choice {
-    padding: 8px 15px;
     background: #2d1e15;
     border: 1px solid #634d32;
-    border-radius: 5px;
     color: #e0d6c3;
+    padding: 10px 15px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .item-choice:hover {
-    background: #3d2a1d;
-    border-color: #8b6b46;
+    background: #3a291e;
+    border-color: #c0a45e;
 }
 
 .item-choice.selected {
-    background: #4d3525;
+    background: #4a2b69;
     border-color: #ffd700;
     color: #ffd700;
 }
@@ -637,4 +709,96 @@ input:checked + .slider:before {
 .item-choice .item-tooltip {
     width: 250px;
     text-align: left;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1426;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #634d32;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c0a45e;
+}
+
+/* Медиа-запрос для мобильных устройств */
+@media (max-width: 768px) {
+    .character-content {
+        flex-direction: column;
+    }
+    
+    .character-portrait {
+        height: 300px;
+        width: 100%;
+    }
+    
+    .character-info {
+        padding: 15px;
+    }
+}
+
+/* Индикаторы прокрутки */
+.scroll-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(26, 20, 35, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffd700;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.scroll-indicator.left {
+    left: 20px;
+}
+
+.scroll-indicator.right {
+    right: 20px;
+}
+
+.characters-container:hover .scroll-indicator {
+    opacity: 1;
+}
+
+.scroll-indicator:hover {
+    background: rgba(26, 20, 35, 0.95);
+}
+
+/* Точки навигации */
+.navigation-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #2d1e15;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: #ffd700;
+    transform: scale(1.2);
 } 
