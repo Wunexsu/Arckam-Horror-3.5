@@ -1,60 +1,126 @@
-import { gameState, gameConfig, resetGameState, startGame } from './data/gameState.js';
-import { loadScenarios } from './modules/cards/scenario.js';
-import { loadCharacters } from './modules/cards/character.js';
-import { CARD_EFFECTS } from './modules/effects/cardEffects.js';
-import { CardEffectsManager } from './modules/effects/CardEffectsManager.js';
+import { scenarios } from './data/scenarios.js';
+import { ScenarioCard } from './modules/cards/ScenarioCard.js';
+import { CharacterSelection } from './modules/cards/characterSelection.js';
 
-// Инициализация игры
-function initGame() {
-    console.log('Инициализация игры...');
-    
-    // Загрузка сценариев и персонажей
-    loadScenarios();
-    loadCharacters();
-    
-    // Обработчики событий
-    document.getElementById('mythosModeToggle')?.addEventListener('change', function(e) {
-        gameConfig.useModifiedMythos = e.target.checked;
-        document.getElementById('mythosModeLabel').textContent = 
-            this.checked ? "Расширенная фаза мифов" : "Стандартные правила";
-    });
-
-    console.log('Игра инициализирована успешно');
-}
-
-// Общая функция для загрузки карточек
-function loadCards(options) {
-    const {
-        type,
-        containerClass,
-        data,
-        createCard
-    } = options;
-
-    console.log(`Загрузка ${type}...`);
-    const wrapper = document.querySelector(containerClass);
-    
-    if (!wrapper) {
-        console.error(`Ошибка: Не найден контейнер для ${type}`);
-        return;
+class Game {
+    constructor() {
+        this.currentScreen = 'scenario';
+        this.characterSelection = null;
+        this.selectedCharacter = null;
+        this.selectedScenario = null;
+        this.mythosMode = 'standard';
+        this.init();
     }
 
-    Object.entries(data).forEach(([key, item], index) => {
-        const card = createCard(key, item);
-        card.style.animationDelay = `${index * 150}ms`;
-        wrapper.appendChild(card);
-    });
+    init() {
+        this.initScreens();
+        this.initCharacterSelection();
+        this.addEventListeners();
+    }
 
-    console.log(`${type} загружены`);
+    initScreens() {
+        // Показываем начальный экран
+        this.showScreen(this.currentScreen);
+    }
+
+    initCharacterSelection() {
+        // Инициализируем выбор персонажа
+        this.characterSelection = new CharacterSelection();
+    }
+
+    addEventListeners() {
+        // Слушаем выбор персонажа
+        document.addEventListener('characterSelected', (e) => {
+            this.selectedCharacter = e.detail.character;
+            console.log('Выбран персонаж:', this.selectedCharacter.name);
+        });
+
+        // Слушаем выбор сценария
+        document.addEventListener('scenarioSelected', (e) => {
+            this.selectedScenario = e.detail.scenario;
+            console.log('Выбран сценарий:', this.selectedScenario.name);
+            // После выбора сценария переходим к выбору персонажа
+            this.showScreen('character');
+        });
+
+        // Слушаем изменение режима мифов
+        const mythosToggle = document.getElementById('mythosMode');
+        if (mythosToggle) {
+            mythosToggle.addEventListener('change', (e) => {
+                this.mythosMode = e.target.checked ? 'modified' : 'standard';
+                console.log('Выбран режим мифов:', this.mythosMode);
+            });
+        }
+    }
+
+    showScreen(screenName) {
+        // Скрываем все экраны
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        // Показываем нужный экран
+        const screen = document.querySelector(`.${screenName}-mode`);
+        if (screen) {
+            screen.classList.add('active');
+            this.currentScreen = screenName;
+        }
+    }
+
+    startGame() {
+        if (!this.selectedCharacter || !this.selectedScenario) {
+            console.error('Не выбран персонаж или сценарий');
+            return;
+        }
+
+        console.log('Начинаем игру:', {
+            character: this.selectedCharacter.name,
+            scenario: this.selectedScenario.name,
+            mythosMode: this.mythosMode
+        });
+
+        // Переходим к игровому экрану
+        this.showScreen('game');
+        // Здесь будет инициализация игрового процесса
+    }
 }
 
-// Запуск при загрузке страницы
-document.addEventListener('DOMContentLoaded', initGame);
+// Создаем экземпляр игры при загрузке страницы
+window.addEventListener('DOMContentLoaded', () => {
+    window.game = new Game();
+});
 
-// Экспорт функций для использования в других модулях
-export {
-    initGame,
-    loadCards,
-    CARD_EFFECTS,
-    CardEffectsManager
-}; 
+// Инициализация игры
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Инициализация игры...');
+    
+    try {
+        // Загрузка сценариев
+        const scenariosContainer = document.querySelector('.scenarios-container');
+        if (!scenariosContainer) {
+            throw new Error('Контейнер для сценариев не найден в DOM');
+        }
+        
+        console.log('Начинаем загрузку сценариев...');
+        console.log('Доступные сценарии:', Object.keys(scenarios));
+        
+        // Создаем карточки для каждого сценария
+        Object.values(scenarios).forEach((scenario, index) => {
+            try {
+                const card = new ScenarioCard(scenario);
+                if (card.element) {
+                    // Добавляем задержку анимации
+                    card.element.style.animationDelay = `${index * 150}ms`;
+                    scenariosContainer.appendChild(card.element);
+                    console.log('Карточка добавлена в контейнер:', scenario.id);
+                }
+            } catch (error) {
+                console.error(`Ошибка при создании карточки для сценария ${scenario.id}:`, error);
+            }
+        });
+
+        console.log('Загрузка сценариев завершена');
+    } catch (error) {
+        console.error('Ошибка при инициализации игры:', error);
+    }
+}); 

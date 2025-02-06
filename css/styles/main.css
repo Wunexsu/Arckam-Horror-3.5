@@ -1,0 +1,330 @@
+/* Базовые стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0a0a0f;
+    color: #f2d492;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Экраны */
+.screen {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Заголовки */
+h1 {
+    color: #ffd700;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+    color: #ffd700;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    color: #ffd700;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+/* Кнопки */
+button {
+    background: #2a1f3d;
+    color: #f2d492;
+    border: 2px solid #634d32;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #3a2f4d;
+    border-color: #ffd700;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button.active {
+    background: #4a3f5d;
+    border-color: #ffd700;
+}
+
+/* Сообщения */
+.game-message {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26, 20, 38, 0.9);
+    color: #f2d492;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    border: 2px solid #ffd700;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.game-message.show {
+    opacity: 1;
+    animation: messageAppear 0.3s ease forwards;
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* Полосы прокрутки */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1426;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #634d32;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+/* Стили для режима мифов */
+.scenario-mode {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.scenario-mode h2 {
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.mode-selector {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.mode-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #2d1e15;
+    border: 1px solid #634d32;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-option:hover {
+    background: #3a291e;
+    border-color: #c0a45e;
+}
+
+.mode-option input[type="radio"] {
+    display: none;
+}
+
+.mode-option input[type="radio"]:checked + .mode-icon {
+    color: #ffd700;
+}
+
+.mode-icon {
+    font-size: 24px;
+    color: #c0a45e;
+}
+
+.mode-label {
+    color: #e0d6c3;
+}
+
+/* Стили для выбора режима мифов */
+.mythos-mode-selector {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.toggle-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #634d32;
+    border-radius: 25px;
+}
+
+.toggle-label {
+    color: #f2d492;
+    font-size: 0.9rem;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2d1e15;
+    transition: .4s;
+    border-radius: 24px;
+    border: 1px solid #634d32;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 3px;
+    background-color: #ffd700;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+input:checked + .slider {
+    background-color: #4a2b69;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-container:hover .slider {
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.toggle-container:hover .slider:before {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+.mode-options {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.mode-option {
+    flex: 1;
+    max-width: 300px;
+    position: relative;
+    cursor: pointer;
+}
+
+.mode-option input[type="radio"] {
+    display: none;
+}
+
+.mode-option label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(42, 31, 61, 0.6);
+    border: 2px solid #634d32;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.mode-option:hover label {
+    background: rgba(58, 47, 77, 0.6);
+    border-color: #ffd700;
+    transform: translateY(-2px);
+}
+
+.mode-option input[type="radio"]:checked + label {
+    background: rgba(74, 63, 93, 0.6);
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.mode-icon {
+    font-size: 2rem;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border: 1px solid #634d32;
+}
+
+.mode-info {
+    flex: 1;
+}
+
+.mode-title {
+    color: #ffd700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.mode-description {
+    color: #f2d492;
+    font-size: 0.9rem;
+    line-height: 1.4;
+} 

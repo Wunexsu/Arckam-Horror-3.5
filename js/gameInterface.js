@@ -1,19 +1,19 @@
 // Базовый класс для игровых команд
 class GameCommand {
-    constructor(interface) {
-        this.interface = interface;
+    constructor(controller) {
+        this.controller = controller;
     }
     
     execute() {
         if (gameState.actionsLeft < 1) {
-            this.interface.showMessage("Не осталось действий!");
+            this.controller.showMessage("Не осталось действий!");
             return false;
         }
         
         const result = this.performAction();
         if (result !== false) {
             gameState.actionsLeft--;
-            this.interface.updateActionButtons();
+            this.controller.updateActionButtons();
         }
         return result;
     }
@@ -29,11 +29,11 @@ class InvestigateCommand extends GameCommand {
         const currentDistrict = gameState.districts[gameState.currentLocation];
         if (currentDistrict.clues > 0) {
             currentDistrict.clues--;
-            this.interface.showMessage("Найдена улика!");
-            this.interface.updateDistrictView();
+            this.controller.showMessage("Найдена улика!");
+            this.controller.updateDistrictView();
             return true;
         } else {
-            this.interface.showMessage("Здесь больше нет улик.");
+            this.controller.showMessage("Здесь больше нет улик.");
             return false;
         }
     }
@@ -53,13 +53,20 @@ class RestCommand extends GameCommand {
     performAction() {
         const character = gameState.players[0];
         character.health = Math.min(character.health + 1, character.maxHealth);
-        this.interface.showMessage("Восстановлено 1 здоровье");
-        this.interface.updateCharacterStatus();
+        this.controller.showMessage("Восстановлено 1 здоровье");
+        this.controller.updateCharacterStatus();
         return true;
     }
 }
 
-class EldritchInterface {
+// Импорты
+import { loadCharacters } from './modules/cards/character.js';
+import { loadScenarios } from './modules/cards/scenario.js';
+import { scenarios } from './data/scenarios.js';
+import { characters } from './data/characters.js';
+import { gameState } from './data/gameState.js';
+
+class GameController {
     constructor() {
         this.commands = {
             'investigate': new InvestigateCommand(this),
@@ -83,22 +90,31 @@ class EldritchInterface {
     setupActionButtons() {
         const actionButtons = {
             investigate: {
-                icon: '🔍'
+                icon: '🔍',
+                action: () => this.investigate()
             },
             combat: {
-                icon: '⚔'
+                icon: '⚔',
+                action: () => this.startCombat()
             },
             rest: {
-                icon: '🕯'
+                icon: '🕯',
+                action: () => this.rest()
             }
         };
 
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            const action = btn.dataset.action;
-            if (actionButtons[action]) {
-                btn.innerHTML = actionButtons[action].icon;
-            }
-        });
+        const container = document.querySelector('.action-buttons');
+        if (container) {
+            container.innerHTML = '';
+            Object.entries(actionButtons).forEach(([key, data]) => {
+                const button = document.createElement('button');
+                button.className = 'action-btn';
+                button.dataset.action = key;
+                button.innerHTML = data.icon;
+                button.addEventListener('click', data.action);
+                container.appendChild(button);
+            });
+        }
     }
 
     handleAction(action) {
@@ -110,26 +126,52 @@ class EldritchInterface {
         }
     }
 
-    // Общая функция для обновления состояния кнопок действий
-    updateActionButtons() {
-        const buttons = document.querySelectorAll('.action-btn');
-        const disabled = gameState.actionsLeft < 1;
-        
-        buttons.forEach(btn => {
-            btn.disabled = disabled;
-            // Добавляем визуальный класс для отключенных кнопок
-            if (disabled) {
-                btn.classList.add('disabled');
+    investigate() {
+        const currentDistrict = gameState.districts[gameState.currentLocation];
+        if (currentDistrict.clues > 0 && gameState.actionsLeft > 0) {
+            currentDistrict.clues--;
+            gameState.actionsLeft--;
+            showMessage("Найдена улика!");
+            updateGameInterface();
+        } else if (gameState.actionsLeft === 0) {
+            showMessage("Не осталось действий!");
+        } else {
+            showMessage("Здесь больше нет улик.");
+        }
+    }
+
+    startCombat() {
+        if (gameState.actionsLeft > 0) {
+            document.querySelector('.combat-overlay').style.display = 'grid';
+            new CombatSystem();
+            gameState.actionsLeft--;
+            updateGameInterface();
+        } else {
+            showMessage("Не осталось действий!");
+        }
+    }
+
+    rest() {
+        if (gameState.actionsLeft > 0) {
+            const character = gameState.players[0];
+            const maxHealth = character.stats.health;
+            if (character.health < maxHealth) {
+                character.health = Math.min(character.health + 1, maxHealth);
+                gameState.actionsLeft--;
+                showMessage("Восстановлено 1 здоровье");
+                updateGameInterface();
             } else {
-                btn.classList.remove('disabled');
+                showMessage("Здоровье уже максимально");
             }
-        });
+        } else {
+            showMessage("Не осталось действий!");
+        }
     }
 
     endTurn() {
         gameState.actionsLeft = 3;
-        this.updateActionButtons();
-        mythosPhase();
+        updateGameInterface();
+        showMessage("Новый ход начался");
     }
 
     updateDistrictView() {
@@ -206,12 +248,110 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Управление интерфейсом игры
-import { loadCharacters } from './modules/cards/character.js';
-import { loadScenarios } from './modules/cards/scenario.js';
+// Функция инициализации игры
+export function initializeGame() {
+    if (!gameState.selectedScenario || !gameState.selectedCharacter) {
+        console.error('Не выбран сценарий или персонаж');
+        return;
+    }
+
+    // Инициализируем состояние игры
+    gameState.currentLocation = gameState.selectedScenario.startArea;
+    gameState.actionsLeft = 3;
+    gameState.players = [{
+        ...gameState.selectedCharacter,
+        location: gameState.selectedScenario.startArea,
+        isLeader: true,
+        health: gameState.selectedCharacter.stats.health,
+        sanity: gameState.selectedCharacter.stats.sanity
+    }];
+
+    // Инициализируем районы
+    gameState.districts = {};
+    gameState.selectedScenario.districts.forEach(district => {
+        gameState.districts[district.id] = {
+            ...district,
+            despair: district.initialDespair,
+            clues: district.initialClues
+        };
+    });
+
+    console.log('Игра инициализирована:', gameState);
+}
+
+// Функция обновления игрового интерфейса
+export function updateGameInterface() {
+    // Обновляем информацию о текущей локации
+    const currentDistrict = gameState.districts[gameState.currentLocation];
+    const locationInfo = document.querySelector('.location-info');
+    if (locationInfo && currentDistrict) {
+        locationInfo.querySelector('h2').textContent = currentDistrict.name.toUpperCase();
+        locationInfo.querySelector('.threat-level').textContent = 
+            `Уровень угрозы: ${calculateThreatLevel(currentDistrict.despair)}`;
+    }
+
+    // Обновляем статистику персонажа
+    const character = gameState.players[0];
+    const characterStats = document.querySelector('.character-stats');
+    if (characterStats && character) {
+        const healthBar = characterStats.querySelector('.health .bar-fill');
+        const sanityBar = characterStats.querySelector('.sanity .bar-fill');
+        
+        const healthPercent = (character.health / character.stats.health) * 100;
+        const sanityPercent = (character.sanity / character.stats.sanity) * 100;
+        
+        healthBar.style.width = `${healthPercent}%`;
+        sanityBar.style.width = `${sanityPercent}%`;
+        
+        healthBar.parentElement.querySelector('.bar-text').textContent = 
+            `Здоровье: ${character.health}`;
+        sanityBar.parentElement.querySelector('.bar-text').textContent = 
+            `Рассудок: ${character.sanity}`;
+    }
+
+    // Обновляем доступные пути
+    updateAvailablePaths();
+}
+
+// Функция обновления доступных путей
+function updateAvailablePaths() {
+    const currentDistrict = gameState.districts[gameState.currentLocation];
+    const navButtons = document.querySelector('.nav-buttons');
+    
+    if (navButtons && currentDistrict) {
+        navButtons.innerHTML = '';
+        currentDistrict.connectedTo.forEach(locationId => {
+            const district = gameState.districts[locationId];
+            const button = document.createElement('button');
+            button.className = 'nav-btn';
+            button.textContent = `→ ${district.name} (1 действие)`;
+            button.addEventListener('click', () => moveToLocation(locationId));
+            navButtons.appendChild(button);
+        });
+    }
+}
+
+// Функция перемещения между локациями
+function moveToLocation(locationId) {
+    if (gameState.actionsLeft > 0) {
+        gameState.currentLocation = locationId;
+        gameState.actionsLeft--;
+        updateGameInterface();
+    } else {
+        showMessage("Не осталось действий!");
+    }
+}
+
+// Вспомогательная функция для определения уровня угрозы
+function calculateThreatLevel(despair) {
+    if (despair >= 5) return "Критический";
+    if (despair >= 3) return "Высокий";
+    if (despair >= 1) return "Средний";
+    return "Низкий";
+}
 
 // Функция для переключения экранов
-function showScreen(screenId) {
+export function showScreen(screenId) {
     // Скрываем все экраны
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
@@ -221,24 +361,43 @@ function showScreen(screenId) {
     const targetScreen = document.getElementById(screenId);
     if (targetScreen) {
         targetScreen.classList.add('active');
-        
-        // Если это экран выбора персонажа, загружаем персонажей
-        if (screenId === 'characterSelect') {
-            loadCharacters();
-        }
+        console.log(`Переключение на экран: ${screenId}`);
     }
 }
 
 // Обработчики событий
 document.addEventListener('DOMContentLoaded', () => {
-    // Показываем экран выбора персонажа при загрузке
-    showScreen('characterSelect');
+    console.log('DOM loaded, initializing game interface...');
     
+    // Инициализируем интерфейс
+    const gameController = new GameController();
+    
+    // Показываем экран выбора сценария при загрузке
+    showScreen('scenarioSelect');
+    
+    // Обработчик выбора сценария
+    document.addEventListener('scenarioSelected', (event) => {
+        const { scenarioId } = event.detail;
+        console.log(`Выбран сценарий: ${scenarioId}`);
+        gameState.selectedScenario = scenarios[scenarioId];
+        showScreen('characterSelect');
+        // Загружаем персонажей после выбора сценария
+        loadCharacters();
+    });
+
     // Обработчик выбора персонажа
     document.addEventListener('characterSelected', (event) => {
         const { characterId } = event.detail;
         console.log(`Выбран персонаж: ${characterId}`);
-        // Здесь можно добавить логику перехода к следующему экрану
+        
+        // Сохраняем выбранного персонажа
+        gameState.selectedCharacter = characters[characterId];
+        
+        // Показываем кнопку начала игры
+        const startGameBtn = document.getElementById('startGameBtn');
+        if (startGameBtn) {
+            startGameBtn.style.display = 'inline-block';
+        }
     });
     
     // Обработчик выбора предмета
@@ -246,9 +405,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const { characterId, itemName } = event.detail;
         console.log(`Выбран предмет ${itemName} для персонажа ${characterId}`);
     });
+
+    // Обработчик кнопки начала игры
+    const startGameBtn = document.getElementById('startGameBtn');
+    if (startGameBtn) {
+        startGameBtn.addEventListener('click', () => {
+            if (gameState.selectedCharacter && gameState.selectedScenario) {
+                // Инициализируем игру
+                initializeGame();
+                
+                // Переходим к игровому экрану
+                showScreen('gameBoard');
+                
+                // Обновляем интерфейс
+                updateGameInterface();
+            } else {
+                showMessage("Сначала выберите персонажа!");
+            }
+        });
+    }
 });
 
-export { showScreen };
-
 // Инициализация интерфейса
-const gameInterface = new EldritchInterface(); 
+const gameController = new GameController(); 

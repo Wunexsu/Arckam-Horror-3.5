@@ -1,0 +1,93 @@
+/* Стили для боевой системы */
+.combat-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    grid-template-rows: 1fr auto;
+    padding: 20px;
+}
+
+.combat-log {
+    background: rgba(26, 20, 38, 0.9);
+    border: 2px solid #634d32;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.log-entry {
+    color: #f2d492;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #634d32;
+}
+
+.combat-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(26, 20, 38, 0.9);
+    border: 2px solid #634d32;
+    border-radius: 8px;
+}
+
+.combat-btn {
+    padding: 10px 20px;
+    background: #2d1e15;
+    border: 1px solid #634d32;
+    border-radius: 4px;
+    color: #f2d492;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.combat-btn:hover {
+    background: #3a291e;
+    border-color: #ffd700;
+    transform: translateY(-2px);
+}
+
+.combat-btn:active {
+    transform: translateY(0);
+}
+
+/* Анимации для боевых действий */
+@keyframes attackAnimation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes dodgeAnimation {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes spellAnimation {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+    100% { filter: brightness(1); }
+}
+
+.combat-btn[data-action="attack"]:active {
+    animation: attackAnimation 0.3s ease;
+}
+
+.combat-btn[data-action="dodge"]:active {
+    animation: dodgeAnimation 0.3s ease;
+}
+
+.combat-btn[data-action="spell"]:active {
+    animation: spellAnimation 0.3s ease;
+} 

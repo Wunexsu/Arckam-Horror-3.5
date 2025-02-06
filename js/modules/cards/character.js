@@ -1,5 +1,7 @@
 import { characters } from '../../data/characters.js';
 import { cardTemplates } from './templates/cardTemplates.js';
+import { gameState } from '../../data/gameState.js';
+import { showScreen, initializeGame, updateGameInterface } from '../../gameInterface.js';
 
 let startX;
 let scrollLeft;
@@ -49,10 +51,20 @@ function createCharacterCard(characterId, character) {
     
     // Добавляем обработчик клика
     card.addEventListener('click', () => {
+        // Убираем активный класс у всех карточек
         document.querySelectorAll('.character-card').forEach(c => {
             c.classList.remove('active');
         });
+        // Добавляем активный класс текущей карточке
         card.classList.add('active');
+        
+        // Показываем кнопку начала игры
+        const startGameBtn = document.getElementById('startGameBtn');
+        if (startGameBtn) {
+            startGameBtn.style.display = 'inline-block';
+            // Добавляем анимацию появления
+            startGameBtn.style.animation = 'messageAppear 0.5s ease-out, pulseButton 2s infinite';
+        }
         
         // Вызываем событие выбора персонажа
         const selectEvent = new CustomEvent('characterSelected', {
@@ -160,6 +172,25 @@ function snapToNearestCard() {
     scrollToCard(Math.abs(nearestCard));
 }
 
+// Функция для инициализации кнопки начала игры
+function initStartGameButton() {
+    const startGameBtn = document.getElementById('startGameBtn');
+    if (startGameBtn) {
+        startGameBtn.addEventListener('click', () => {
+            if (gameState.selectedCharacter) {
+                // Инициализируем игру
+                initializeGame();
+                
+                // Переходим к игровому экрану
+                showScreen('gameBoard');
+                
+                // Обновляем интерфейс
+                updateGameInterface();
+            }
+        });
+    }
+}
+
 // Функция загрузки персонажей
 export function loadCharacters() {
     console.log('Загрузка персонажей...');
@@ -185,6 +216,9 @@ export function loadCharacters() {
     
     // Инициализируем перетаскивание
     initDragScroll();
+    
+    // Инициализируем кнопку начала игры
+    initStartGameButton();
     
     console.log('Персонажи загружены');
 } 
