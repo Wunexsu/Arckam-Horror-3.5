@@ -1,4 +1,5 @@
 import { items } from '../../../data/characters.js';
+import { locations } from '../../../data/locations.js';
 
 // Шаблон для предмета с подсказкой
 const itemWithTooltip = (itemName) => {
@@ -33,21 +34,15 @@ const expandedItemTemplate = (item, isSelectable = false, isSelected = false) =>
 };
 
 // Шаблон для раскрытой карточки
-const expandedCharacterCard = (character, selectedItem = null) => {
-    // Определяем текст предыстории в зависимости от персонажа
-    const storyText = character.id === 'agnes' ? 
-        'Издавна Агнес мучили сновидения: люди в мантиях, песнопения, рычащие монстры, которых она видела краем глаза. Однажды она упала и ударилась головой, и с тех пор сны стали приходить к ней наяву: как она руководит пением людей в мантиях, как она прячет серебряный ключ в кладке колодца, как она, будучи волшебницей, творит заклинания в мистической Гиперборее. В поисках объяснения Агнес приехала в Аркхэм, славящийся легендами о судах над ведьмами и другими странными историями. Она устроилась к Вельме и вскоре нашла старый колодец с расшатанной каменной кладкой. За камнем оказался спрятан серебряный ключ - и она точно знала, где его искать.' :
-        'В семье Малдунов было несколько поколений полицейских, и Томми не стал исключением. Закончив академию в Бостоне, он стал гордостью своей семьи. Так что, когда Томми назначили в полицию Аркхэма, он расстроился: в конце концов, куда Аркхэму до случаев и расследований большого города, с которыми он бы работал в Бостоне? Однако работа в Аркхэме тоже оказалась по-своему интересной. Дела здесь, очевидно, обстояли странно, и, похоже, местной полиции было проще делать вид, что ничего не происходит, чем исправлять ситуацию. Так что Томми, вооружившись дедушкиным ружьём по прозвищу Бекки, решил действовать в одиночку.';
-
-    return `
+const expandedCharacterCard = (character, selectedItem = null) => `
     <div class="character-card-expanded">
         <div class="expanded-left-column">
             <div class="expanded-portrait">
-                <img src="images/characters/${character.id}.jpg" alt="${character.name}">
+                <img src="character/${character.id}.jpg" alt="${character.name}">
             </div>
-            <div class="story-title">С чего всё началось</div>
-            <div class="story-text">
-                ${storyText}
+            <div class="character-story">
+                <h4>История персонажа</h4>
+                <p>${character.story || 'История этого персонажа пока не написана.'}</p>
             </div>
         </div>
         <div class="expanded-info">
@@ -55,23 +50,34 @@ const expandedCharacterCard = (character, selectedItem = null) => {
                 <h2 class="expanded-title">${character.name}</h2>
                 <div class="expanded-role">${character.role}</div>
             </div>
-            
-            <div class="expanded-equipment">
-                <h3 class="equipment-title">Стартовое снаряжение:</h3>
-                <div class="equipment-list">
-                    ${character.defaultItems.map(item => expandedItemTemplate(item)).join('')}
+
+            <div class="character-stats">
+                <div class="stat-row">
+                    <div class="stat-icon health"></div>
+                    <div class="stat-value">${character.stats.health}</div>
                 </div>
-                
-                ${character.choiceItems && character.choiceItems.length > 0 ? `
-                    <h3 class="equipment-title">Выберите один предмет:</h3>
-                    <div class="equipment-list">
-                        ${character.choiceItems.map(item => 
-                            expandedItemTemplate(item, true, item === selectedItem)
-                        ).join('')}
-                    </div>
-                ` : ''}
+                <div class="stat-row">
+                    <div class="stat-icon sanity"></div>
+                    <div class="stat-value">${character.stats.sanity}</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-icon strength"></div>
+                    <div class="stat-value">${character.stats.strength}</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-icon will"></div>
+                    <div class="stat-value">${character.stats.will}</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-icon observation"></div>
+                    <div class="stat-value">${character.stats.observation}</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-icon influence"></div>
+                    <div class="stat-value">${character.stats.influence}</div>
+                </div>
             </div>
-            
+
             <div class="character-abilities">
                 <div class="ability-primary">
                     <div class="ability-name">${character.ability.name}</div>
@@ -84,14 +90,45 @@ const expandedCharacterCard = (character, selectedItem = null) => {
                     </div>
                 ` : ''}
             </div>
+
+            <div class="character-items">
+                <div class="default-items">
+                    <h4>Стартовые вещи:</h4>
+                    <ul>
+                        ${character.defaultItems.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                ${character.choiceItems ? `
+                    <div class="item-choices">
+                        <h4>Выберите дополнительный предмет:</h4>
+                        ${character.choiceItems.map(item => `
+                            <button class="item-choice equipment-item selectable ${selectedItem === item ? 'selected' : ''}" 
+                                    data-item="${item}">
+                                <div class="item-with-tooltip">
+                                    <span class="item-name">${item}</span>
+                                    <div class="item-tooltip">
+                                        <div class="item-type">Предмет</div>
+                                        <div class="item-description">Описание предмета ${item}</div>
+                                    </div>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+
+            ${character.quote ? `
+                <div class="character-quote">
+                    "${character.quote}"
+                </div>
+            ` : ''}
         </div>
-        <button class="close-expanded">×</button>
+        <button class="close-expanded">&times;</button>
     </div>
 `;
-};
 
 // Шаблоны для карточек
-export const cardTemplates = {
+export const templates = {
     statBox: (label, value) => `
         <div class="stat-box">
             <div class="stat-label">${label}</div>
@@ -123,8 +160,8 @@ export const cardTemplates = {
                             <h3 class="scenario-title">${scenario.title || 'Без названия'}</h3>
                             <p class="scenario-description">${scenario.description || 'Описание отсутствует'}</p>
                             <div class="scenario-stats">
-                                ${cardTemplates.statBox('Улики', stats?.totalClues || 0)}
-                                ${cardTemplates.statBox('Безысходность', stats?.totalDespair || 0)}
+                                ${templates.statBox('Улики', stats?.totalClues || 0)}
+                                ${templates.statBox('Безысходность', stats?.totalDespair || 0)}
                             </div>
                             <div class="scenario-details">
                                 <div class="scenario-location">Начальная локация: ${stats?.startLocation || 'Не указана'}</div>
@@ -141,78 +178,56 @@ export const cardTemplates = {
     },
 
     characterCard: (character) => {
-        if (!character) {
-            console.error('Персонаж не определен');
-            return '';
-        }
-
         try {
             return `
-                <div class="character-wrapper">
-                    <div class="character-card" data-character="${character.id}">
-                        <div class="character-content">
-                            <div class="character-portrait" style="background-image: url('images/characters/${character.id}.jpg')"></div>
-
-                            <div class="character-info">
-                                <h3 class="character-name">${character.name}</h3>
-                                <div class="character-role">${character.role}</div>
-                                
-                                <div class="character-stats">
-                                    <div class="stat-row">
-                                        <div class="stat-icon health"></div>
-                                        <div class="stat-value">${character.stats.health}</div>
-                                        <div class="stat-icon sanity"></div>
-                                        <div class="stat-value">${character.stats.sanity}</div>
-                                    </div>
-                                    <div class="stat-row">
-                                        <div class="stat-icon strength"></div>
-                                        <div class="stat-value">${character.stats.strength}</div>
-                                        <div class="stat-icon will"></div>
-                                        <div class="stat-value">${character.stats.will}</div>
-                                    </div>
-                                    <div class="stat-row">
-                                        <div class="stat-icon observation"></div>
-                                        <div class="stat-value">${character.stats.observation}</div>
-                                        <div class="stat-icon influence"></div>
-                                        <div class="stat-value">${character.stats.influence}</div>
-                                    </div>
+                <div class="character-card" data-character="${character.id}">
+                    <div class="character-content">
+                        <div class="character-portrait" style="background-image: url('character/${character.id}.jpg')"></div>
+                        <div class="character-info">
+                            <h3 class="character-title">${character.name}</h3>
+                            <div class="character-role">${character.role}</div>
+                            
+                            <div class="character-abilities">
+                                <div class="ability-primary">
+                                    <div class="ability-name">${character.ability.name}</div>
+                                    <div class="ability-description">${character.ability.description}</div>
                                 </div>
+                            </div>
 
-                                ${character.quote ? `
-                                    <div class="character-quote">"${character.quote}"</div>
-                                ` : ''}
-
-                                <div class="character-abilities">
-                                    <div class="ability-primary">
-                                        <div class="ability-name">${character.ability.name}</div>
-                                        <div class="ability-description">${character.ability.description}</div>
-                                    </div>
-                                    ${character.secondaryAbility ? `
-                                        <div class="ability-secondary">
-                                            <div class="ability-name">${character.secondaryAbility.name}</div>
-                                            <div class="ability-description">${character.secondaryAbility.description}</div>
-                                        </div>
-                                    ` : ''}
+                            <div class="stats-grid">
+                                <div class="stat-row">
+                                    <div class="stat-icon health"></div>
+                                    <div class="stat-value">${character.stats.health}</div>
                                 </div>
+                                <div class="stat-row">
+                                    <div class="stat-icon sanity"></div>
+                                    <div class="stat-value">${character.stats.sanity}</div>
+                                </div>
+                            </div>
 
-                                <div class="character-items">
-                                    <div class="items-title">Стартовое снаряжение:</div>
-                                    <ul class="items-list">
-                                        ${character.defaultItems.map(item => `
-                                            <li>${itemWithTooltip(item)}</li>
-                                        `).join('')}
+                            <div class="character-items">
+                                <div class="default-items">
+                                    <h4>Стартовые вещи:</h4>
+                                    <ul>
+                                        ${character.defaultItems.map(item => `<li>${item}</li>`).join('')}
                                     </ul>
-                                    ${character.choiceItems && character.choiceItems.length > 0 ? `
-                                        <div class="items-title">Выберите один предмет:</div>
-                                        <div class="item-choices">
-                                            ${character.choiceItems.map(item => `
-                                                <button type="button" class="item-choice" data-item="${item}">
-                                                    ${itemWithTooltip(item)}
-                                                </button>
-                                            `).join('')}
-                                        </div>
-                                    ` : ''}
                                 </div>
+                                ${character.choiceItems ? `
+                                    <div class="item-choices">
+                                        <h4>Выберите дополнительный предмет:</h4>
+                                        ${character.choiceItems.map(item => `
+                                            <button class="item-choice" data-item="${item}">
+                                                <div class="item-with-tooltip">
+                                                    <span class="item-name">${item}</span>
+                                                    <div class="item-tooltip">
+                                                        <div class="item-type">Предмет</div>
+                                                        <div class="item-description">Описание предмета ${item}</div>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -224,5 +239,96 @@ export const cardTemplates = {
         }
     },
 
-    expandedCharacterCard
-}; 
+    expandedCharacterCard,
+
+    gameInterfaceTemplate: (character, currentLocation) => {
+        return `
+            <div class="game-interface">
+                <div class="top-bar">
+                    <div class="character-info">
+                        <div class="character-avatar">
+                            <img src="${character.avatar}" alt="${character.name}">
+                        </div>
+                        <div class="character-name">${character.name}</div>
+                        <div class="character-level">Ур. 1</div>
+                    </div>
+                    <div class="character-bars">
+                        <div class="health-bar">
+                            <div class="bar-fill" style="width: ${(character.health.current / character.health.max) * 100}%"></div>
+                            <div class="bar-text">ХП: ${character.health.current}/${character.health.max}</div>
+                        </div>
+                        <div class="energy-bar">
+                            <div class="bar-fill" style="width: ${(character.sanity.current / character.sanity.max) * 100}%"></div>
+                            <div class="bar-text">Рассудок: ${character.sanity.current}/${character.sanity.max}</div>
+                        </div>
+                    </div>
+                    <div class="location-name">
+                        <div class="location-icon"></div>
+                        <span>${currentLocation?.name || 'Выберите локацию'}</span>
+                    </div>
+                </div>
+                
+                <div class="main-area">
+                    <div class="game-scene">
+                        ${currentLocation ? locationTemplate(currentLocation) : '<div class="no-location">Выберите локацию для начала игры</div>'}
+                    </div>
+                    <div class="right-panel">
+                        <div class="action-buttons">
+                            <button class="action-btn">
+                                <div class="icon search-icon"></div>
+                                <span>Исследовать</span>
+                            </button>
+                            <button class="action-btn">
+                                <div class="icon journal-icon"></div>
+                                <span>Журнал заданий</span>
+                            </button>
+                        </div>
+                        
+                        <div class="location-list">
+                            <h3>Доступные локации</h3>
+                            ${currentLocation?.connectedTo.map(locationId => `
+                                <button class="location-btn" data-location="${locationId}">
+                                    <div class="icon arrow-icon"></div>
+                                    <span>${locations[locationId].name}</span>
+                                </button>
+                            `).join('') || ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bottom-panel">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active">Журнал событий</button>
+                        <button class="tab-btn">Инвентарь</button>
+                        <button class="tab-btn">Характеристики</button>
+                    </div>
+                    <div class="chat-area">
+                        <div class="chat-messages">
+                            <div class="message">Добро пожаловать в Аркхэм!</div>
+                            ${currentLocation ? `<div class="message">Вы находитесь в локации: ${currentLocation.name}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    locationTemplate
+};
+
+export function locationTemplate(location) {
+    return `
+        <div class="location-view">
+            <div class="location-image">
+                <img src="${location.image}" alt="${location.name}">
+            </div>
+            <div class="location-info">
+                <h2>${location.name}</h2>
+                <p class="location-description">${location.description}</p>
+            </div>
+        </div>
+    `;
+}
+
+// Экспортируем объект templates под именем cardTemplates для обратной совместимости
+export const cardTemplates = templates; 

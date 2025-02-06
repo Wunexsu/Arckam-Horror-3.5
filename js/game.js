@@ -1,6 +1,7 @@
 import { scenarios } from './data/scenarios.js';
 import { ScenarioCard } from './modules/cards/ScenarioCard.js';
 import { CharacterSelection } from './modules/cards/characterSelection.js';
+import { GameInterface } from './modules/game/GameInterface.js';
 
 class Game {
     constructor() {
@@ -14,6 +15,7 @@ class Game {
 
     init() {
         this.initScreens();
+        this.initScenarios();
         this.initCharacterSelection();
         this.addEventListeners();
     }
@@ -21,6 +23,26 @@ class Game {
     initScreens() {
         // Показываем начальный экран
         this.showScreen(this.currentScreen);
+    }
+
+    initScenarios() {
+        const scenariosContainer = document.querySelector('.scenarios-container');
+        if (!scenariosContainer) {
+            console.error('Контейнер для сценариев не найден');
+            return;
+        }
+
+        // Очищаем контейнер
+        scenariosContainer.innerHTML = '';
+
+        // Создаем карточки сценариев
+        Object.values(scenarios).forEach((scenario, index) => {
+            const card = new ScenarioCard(scenario);
+            if (card.element) {
+                card.element.style.animationDelay = `${index * 150}ms`;
+                scenariosContainer.appendChild(card.element);
+            }
+        });
     }
 
     initCharacterSelection() {
@@ -38,7 +60,7 @@ class Game {
         // Слушаем выбор сценария
         document.addEventListener('scenarioSelected', (e) => {
             this.selectedScenario = e.detail.scenario;
-            console.log('Выбран сценарий:', this.selectedScenario.name);
+            console.log('Выбран сценарий:', this.selectedScenario.title);
             // После выбора сценария переходим к выбору персонажа
             this.showScreen('character');
         });
@@ -123,4 +145,31 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
         console.error('Ошибка при инициализации игры:', error);
     }
+});
+
+// Временные данные персонажа для тестирования
+const testCharacter = {
+    name: "Тестовый персонаж",
+    avatar: "character/Agnes.jpg",
+    health: {
+        current: 7,
+        max: 7
+    },
+    sanity: {
+        current: 5,
+        max: 5
+    }
+};
+
+// Инициализация игры
+document.addEventListener('DOMContentLoaded', () => {
+    const app = document.getElementById('app');
+    if (!app) {
+        console.error('Элемент #app не найден');
+        return;
+    }
+
+    // Создаем и монтируем игровой интерфейс
+    const gameInterface = new GameInterface(testCharacter);
+    gameInterface.mount(app);
 }); 

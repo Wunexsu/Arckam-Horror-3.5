@@ -183,33 +183,31 @@ button.active {
 
 /* Стили для выбора режима мифов */
 .mythos-mode-selector {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto 2rem;
-    padding: 1rem;
+    margin-bottom: 2rem;
     text-align: center;
 }
 
 .toggle-container {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
-    padding: 0.5rem 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 2px solid #634d32;
-    border-radius: 25px;
+    padding: 1rem;
+    background: rgba(26, 20, 38, 0.8);
+    border-radius: 15px;
+    border: 1px solid #634d32;
 }
 
 .toggle-label {
     color: #f2d492;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 24px;
+    width: 60px;
+    height: 34px;
 }
 
 .toggle-switch input {
@@ -227,25 +225,24 @@ button.active {
     bottom: 0;
     background-color: #2d1e15;
     transition: .4s;
-    border-radius: 24px;
+    border-radius: 34px;
     border: 1px solid #634d32;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
+    height: 26px;
+    width: 26px;
     left: 4px;
     bottom: 3px;
-    background-color: #ffd700;
+    background-color: #f2d492;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
 }
 
 input:checked + .slider {
-    background-color: #4a2b69;
+    background-color: #6a5acd;
 }
 
 input:checked + .slider:before {
@@ -254,11 +251,10 @@ input:checked + .slider:before {
 
 .toggle-container:hover .slider {
     border-color: #ffd700;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
 .toggle-container:hover .slider:before {
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 8px #ffd700;
 }
 
 .mode-options {

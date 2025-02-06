@@ -91,6 +91,48 @@ export class CharacterSelection {
                 this.closeExpandedCard();
             }
         });
+
+        // Обработчик для кнопки начала игры
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('start-game-btn')) {
+                const selectedCharacter = this.getSelectedCharacter();
+                if (selectedCharacter) {
+                    // Инициализируем состояние игры
+                    const gameState = {
+                        character: selectedCharacter,
+                        health: selectedCharacter.stats.health,
+                        sanity: selectedCharacter.stats.sanity,
+                        inventory: [...selectedCharacter.defaultItems],
+                        location: 'start'
+                    };
+
+                    // Если есть выбранный предмет, добавляем его в инвентарь
+                    const selectedItem = this.selectedItems.get(selectedCharacter.id);
+                    if (selectedItem) {
+                        gameState.inventory.push(selectedItem);
+                    }
+
+                    // Создаем событие начала игры с данными состояния
+                    const gameStartEvent = new CustomEvent('gameStart', {
+                        detail: { gameState }
+                    });
+                    document.dispatchEvent(gameStartEvent);
+                    
+                    // Закрываем раскрытую карточку, если она открыта
+                    this.closeExpandedCard();
+                    
+                    // Скрываем экран выбора персонажа
+                    document.querySelector('.character-mode').classList.remove('active');
+                    
+                    // Показываем и инициализируем игровой экран
+                    const gameScreen = document.querySelector('.game-mode');
+                    gameScreen.classList.add('active');
+
+                    // Обновляем интерфейс игры
+                    this.initializeGameInterface(selectedCharacter);
+                }
+            }
+        });
     }
 
     showExpandedCard(characterId) {
@@ -180,6 +222,14 @@ export class CharacterSelection {
         // Сохраняем выбор
         this.selectedItems.set(characterId, itemName);
 
+        // Активируем кнопку "Начать игру"
+        if (this.expandedCard) {
+            const startGameBtn = this.expandedCard.querySelector('.start-game-btn');
+            if (startGameBtn) {
+                startGameBtn.disabled = false;
+            }
+        }
+
         // Обновляем состояние персонажа и вызываем событие
         if (this.selectedCharacter && this.selectedCharacter.id === characterId) {
             const updatedCharacter = {
@@ -208,6 +258,12 @@ export class CharacterSelection {
     onCharacterSelected(character) {
         const selectedItem = this.selectedItems.get(character.id);
         
+        // Сохраняем выбранного персонажа
+        this.selectedCharacter = character;
+        
+        // Показываем расширенную карточку для выбора предмета
+        this.showExpandedCard(character.id);
+        
         // Вызываем событие выбора персонажа
         const event = new CustomEvent('characterSelected', {
             detail: { 
@@ -221,6 +277,29 @@ export class CharacterSelection {
         if (selectedItem) {
             console.log('Выбранный предмет:', selectedItem);
         }
+
+        // Добавляем кнопку "Начать игру" в расширенную карточку
+        if (this.expandedCard) {
+            const startGameBtn = document.createElement('button');
+            startGameBtn.className = 'start-game-btn';
+            startGameBtn.textContent = 'Начать игру';
+            startGameBtn.disabled = !selectedItem && character.choiceItems?.length > 0; // Кнопка неактивна, если нужно выбрать предмет
+            
+            startGameBtn.addEventListener('click', () => {
+                // Скрываем экран выбора персонажа и расширенную карточку
+                this.closeExpandedCard();
+                document.querySelector('.character-mode').classList.remove('active');
+                
+                // Показываем игровой экран
+                const gameScreen = document.querySelector('.game-mode');
+                gameScreen.classList.add('active');
+
+                // Инициализируем игровой интерфейс
+                this.initializeGameInterface(character);
+            });
+
+            this.expandedCard.appendChild(startGameBtn);
+        }
     }
 
     getSelectedCharacter() {
@@ -230,5 +309,43 @@ export class CharacterSelection {
             ...this.selectedCharacter,
             selectedItem: this.selectedItems.get(this.selectedCharacter.id)
         };
+    }
+
+    // Метод для инициализации игрового интерфейса
+    initializeGameInterface(character) {
+        // Создаем игровой интерфейс
+        const gameScreen = document.querySelector('.game-mode');
+        if (!gameScreen) return;
+
+        // Очищаем предыдущий контент
+        gameScreen.innerHTML = '';
+
+        // Добавляем новый интерфейс
+        const template = cardTemplates.gameInterface(character);
+        gameScreen.innerHTML = template;
+
+        // Инициализируем значения здоровья и рассудка
+        const healthBar = gameScreen.querySelector('.health .bar-fill');
+        const sanityBar = gameScreen.querySelector('.sanity .bar-fill');
+        const healthText = gameScreen.querySelector('.health .bar-text');
+        const sanityText = gameScreen.querySelector('.sanity .bar-text');
+
+        if (healthBar && healthText) {
+            healthBar.style.width = '100%';
+            healthText.textContent = `${character.stats.health}/${character.stats.health}`;
+        }
+
+        if (sanityBar && sanityText) {
+            sanityBar.style.width = '100%';
+            sanityText.textContent = `${character.stats.sanity}/${character.stats.sanity}`;
+        }
+
+        // Добавляем обработчики событий
+        this.addGameInterfaceEventListeners(gameScreen);
+    }
+
+    addGameInterfaceEventListeners(gameScreen) {
+        // Добавляем обработчики событий для игрового интерфейса
+        // ... (реализация метода addGameInterfaceEventListeners)
     }
 } 

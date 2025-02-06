@@ -427,4 +427,114 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Инициализация интерфейса
-const gameController = new GameController(); 
+const gameController = new GameController();
+
+// Класс для управления игровым интерфейсом
+class GameInterface {
+    constructor(character) {
+        this.character = character;
+        this.currentHealth = character.stats.health;
+        this.currentSanity = character.stats.sanity;
+        this.currentLocation = 'square';
+        this.logHistory = [];
+    }
+
+    // Обновление полосок здоровья и рассудка
+    updateBars(health, sanity) {
+        const healthBar = document.querySelector('.health .bar-fill');
+        const sanityBar = document.querySelector('.sanity .bar-fill');
+        const healthText = document.querySelector('.health .bar-text');
+        const sanityText = document.querySelector('.sanity .bar-text');
+
+        if (health < this.currentHealth) {
+            healthBar.classList.add('decreasing');
+            setTimeout(() => healthBar.classList.remove('decreasing'), 300);
+        }
+        if (sanity < this.currentSanity) {
+            sanityBar.classList.add('decreasing');
+            setTimeout(() => sanityBar.classList.remove('decreasing'), 300);
+        }
+
+        const healthPercent = (health / this.character.stats.health) * 100;
+        const sanityPercent = (sanity / this.character.stats.sanity) * 100;
+
+        healthBar.style.width = `${healthPercent}%`;
+        sanityBar.style.width = `${sanityPercent}%`;
+
+        healthText.textContent = `${health}/${this.character.stats.health}`;
+        sanityText.textContent = `${sanity}/${this.character.stats.sanity}`;
+
+        this.currentHealth = health;
+        this.currentSanity = sanity;
+    }
+
+    // Добавление записи в журнал
+    addLogEntry(text, type = 'system') {
+        const logContent = document.querySelector('.log-content');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.textContent = text;
+        
+        logContent.appendChild(entry);
+        logContent.scrollTop = logContent.scrollHeight;
+
+        this.logHistory.push({ text, type });
+        if (this.logHistory.length > 100) {
+            this.logHistory.shift();
+        }
+    }
+
+    // Обработка перемещения
+    handleMovement(location) {
+        const locationNames = {
+            square: 'Центральную площадь',
+            outskirts: 'Окраину',
+            alga: 'Заводской Альга',
+            paiki: 'Пайки',
+            alta: 'Альту',
+            krichet: 'Кричет Риммы'
+        };
+
+        this.addLogEntry(`[Перемещение] Вы направляетесь в ${locationNames[location]}...`, 'movement');
+        setTimeout(() => {
+            this.currentLocation = location;
+            this.addLogEntry(`[Система] Вы находитесь в локации: ${locationNames[location]}`);
+        }, 1000);
+    }
+
+    // Инициализация обработчиков событий
+    initEventListeners() {
+        document.querySelectorAll('.location-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const location = btn.dataset.location;
+                this.handleMovement(location);
+            });
+        });
+    }
+}
+
+// Функция инициализации игрового интерфейса
+export function initializeGameInterface(character) {
+    const gameInterface = new GameInterface(character);
+    gameInterface.initEventListeners();
+    
+    // Добавляем начальную запись в журнал
+    gameInterface.addLogEntry('[Система] Добро пожаловать в игру!');
+    gameInterface.addLogEntry(`[Система] Вы играете за персонажа: ${character.name}`);
+    
+    return gameInterface;
+}
+
+// Функция обновления интерфейса
+export function updateGameInterface(gameInterface, updates) {
+    if (updates.health !== undefined || updates.sanity !== undefined) {
+        gameInterface.updateBars(
+            updates.health ?? gameInterface.currentHealth,
+            updates.sanity ?? gameInterface.currentSanity
+        );
+    }
+
+    if (updates.logEntry) {
+        gameInterface.addLogEntry(updates.logEntry.text, updates.logEntry.type);
+    }
+} 
