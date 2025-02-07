@@ -130,14 +130,14 @@ export const templates = {
                             <div class="default-items">
                                 <h4>Стартовое имущество:</h4>
                                 <ul>
-                                    ${character.defaultItems.map(item => `<li>• ${item}</li>`).join('')}
+                                    ${character.defaultItems.map(item => `<li>• ${itemWithTooltip(item)}</li>`).join('')}
                                 </ul>
                             </div>
                             <div class="item-choices">
                                 <h4>Выберите одно:</h4>
                                 ${character.choiceItems.map(item => `
                                     <button class="item-choice" data-item="${item}">
-                                        • ${item}
+                                        • ${itemWithTooltip(item)}
                                     </button>
                                 `).join('')}
                             </div>
@@ -148,14 +148,55 @@ export const templates = {
                             <h3>С чего всё началось</h3>
                             <p>${character.story}</p>
                         </div>
-                        <div class="role-section">
-                            <div class="primary-role">
-                                <h3>Основная роль</h3>
-                                <p>Будучи хранителем, вы отвечаете за защиту других сыщиков. Например, вы можете избавляться от монстров прежде, чем они станут серьезной угрозой, или помогать своим товарищам приходить в себя после ранений.</p>
+                        <div class="stats-section">
+                            <h3>Характеристики</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-icon health"></div>
+                                    <div class="stat-value">${character.stats.health}</div>
+                                    <div class="stat-name">Здоровье</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon sanity"></div>
+                                    <div class="stat-value">${character.stats.sanity}</div>
+                                    <div class="stat-name">Рассудок</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon knowledge"></div>
+                                    <div class="stat-value">${character.stats.knowledge}</div>
+                                    <div class="stat-name">Знания</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon influence"></div>
+                                    <div class="stat-value">${character.stats.influence}</div>
+                                    <div class="stat-name">Общение</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon observation"></div>
+                                    <div class="stat-value">${character.stats.observation}</div>
+                                    <div class="stat-name">Внимание</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon strength"></div>
+                                    <div class="stat-value">${character.stats.strength}</div>
+                                    <div class="stat-name">Сила</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon will"></div>
+                                    <div class="stat-value">${character.stats.will}</div>
+                                    <div class="stat-name">Воля</div>
+                                </div>
                             </div>
-                            <div class="secondary-role">
-                                <h3>Второстепенная роль</h3>
-                                <p>Будучи бойцом, вы способны умело противостоять несумолимым ударам мифа и помогать в этом своим товарищам. Взаимопомощь приведёт вас к победе.</p>
+                        </div>
+                        <div class="abilities-section">
+                            <h3>Врождённые навыки</h3>
+                            <div class="ability-primary">
+                                <div class="ability-name">${character.ability.name}</div>
+                                <div class="ability-description">${character.ability.description}</div>
+                            </div>
+                            <div class="ability-secondary">
+                                <div class="ability-name">${character.secondaryAbility.name}</div>
+                                <div class="ability-description">${character.secondaryAbility.description}</div>
                             </div>
                         </div>
                     </div>

@@ -396,4 +396,169 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+.stats-section,
+.abilities-section {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats-section h3,
+.abilities-section h3 {
+    font-size: 16px;
+    color: #2b2b2b;
+    margin-bottom: 12px;
+    font-weight: bold;
+    border-bottom: 2px solid #634d32;
+    padding-bottom: 5px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 8px;
+    background: rgba(26, 20, 38, 0.05);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+    background: rgba(26, 20, 38, 0.1);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 24px;
+    height: 24px;
+    margin: 0 auto 4px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #634d32;
+    margin: 2px 0;
+}
+
+.stat-name {
+    font-size: 12px;
+    color: #666;
+}
+
+.ability-primary,
+.ability-secondary {
+    background: rgba(26, 20, 38, 0.05);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.ability-primary:hover,
+.ability-secondary:hover {
+    background: rgba(26, 20, 38, 0.1);
+    transform: translateY(-2px);
+}
+
+.ability-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #634d32;
+    margin-bottom: 4px;
+}
+
+.ability-description {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Иконки характеристик */
+.stat-icon.health { background-image: url('../images/icons/health.png'); }
+.stat-icon.sanity { background-image: url('../images/icons/sanity.png'); }
+.stat-icon.knowledge { background-image: url('../images/icons/knowledge.png'); }
+.stat-icon.influence { background-image: url('../images/icons/influence.png'); }
+.stat-icon.observation { background-image: url('../images/icons/observation.png'); }
+.stat-icon.strength { background-image: url('../images/icons/strength.png'); }
+.stat-icon.will { background-image: url('../images/icons/will.png'); }
+
+/* Стили для всплывающих подсказок */
+.item-with-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.item-name {
+    cursor: pointer;
+    color: #f2d492;
+}
+
+.item-tooltip {
+    visibility: hidden;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    background: rgba(26, 20, 38, 0.95);
+    border: 1px solid #634d32;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    width: 250px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.item-with-tooltip:hover .item-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.item-type {
+    font-size: 12px;
+    color: #c0a45e;
+    margin-bottom: 5px;
+    font-style: italic;
+}
+
+.item-description {
+    font-size: 14px;
+    color: #e0d6c3;
+    line-height: 1.4;
+}
+
+/* Стрелочка для подсказки */
+.item-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #634d32 transparent transparent transparent;
+}
+
+/* Специальные стили для подсказок в кнопках выбора предметов */
+.item-choice .item-with-tooltip {
+    display: inline;
+}
+
+.item-choice .item-tooltip {
+    text-align: left;
+    white-space: normal;
 } 
