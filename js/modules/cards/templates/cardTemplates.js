@@ -36,92 +36,35 @@ const expandedItemTemplate = (item, isSelectable = false, isSelected = false) =>
 // Шаблон для раскрытой карточки
 const expandedCharacterCard = (character, selectedItem = null) => `
     <div class="character-card-expanded">
-        <div class="expanded-left-column">
-            <div class="expanded-portrait">
-                <img src="character/${character.id}.jpg" alt="${character.name}">
-            </div>
-            <div class="character-story">
-                <h4>История персонажа</h4>
-                <p>${character.story || 'История этого персонажа пока не написана.'}</p>
-            </div>
+        <div class="expanded-portrait">
+            <img src="character/${character.id}.jpg" alt="${character.name}">
         </div>
-        <div class="expanded-info">
-            <div class="expanded-header">
-                <h2 class="expanded-title">${character.name}</h2>
-                <div class="expanded-role">${character.role}</div>
+        <div class="expanded-content">
+            <h2>${character.name}</h2>
+            
+            <div class="story-section">
+                <h3>С чего всё началось</h3>
+                <p>${character.story}</p>
             </div>
 
-            <div class="character-stats">
-                <div class="stat-row">
-                    <div class="stat-icon health"></div>
-                    <div class="stat-value">${character.stats.health}</div>
+            <div class="role-section">
+                <div class="primary-role">
+                    <h3>Основная роль</h3>
+                    <p>Будучи хранителем, вы отвечаете за защиту других сыщиков. Например, вы можете избавляться от монстров прежде, чем они станут серьезной угрозой, или помогать своим товарищам приходить в себя после ранений.</p>
                 </div>
-                <div class="stat-row">
-                    <div class="stat-icon sanity"></div>
-                    <div class="stat-value">${character.stats.sanity}</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-icon strength"></div>
-                    <div class="stat-value">${character.stats.strength}</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-icon will"></div>
-                    <div class="stat-value">${character.stats.will}</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-icon observation"></div>
-                    <div class="stat-value">${character.stats.observation}</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-icon influence"></div>
-                    <div class="stat-value">${character.stats.influence}</div>
+                <div class="secondary-role">
+                    <h3>Второстепенная роль</h3>
+                    <p>Будучи бойцом, вы способны умело противостоять несумолимым ударам мифа и помогать в этом своим товарищам. Взаимопомощь приведёт вас к победе.</p>
                 </div>
             </div>
 
-            <div class="character-abilities">
-                <div class="ability-primary">
-                    <div class="ability-name">${character.ability.name}</div>
-                    <div class="ability-description">${character.ability.description}</div>
-                </div>
-                ${character.secondaryAbility ? `
-                    <div class="ability-secondary">
-                        <div class="ability-name">${character.secondaryAbility.name}</div>
-                        <div class="ability-description">${character.secondaryAbility.description}</div>
-                    </div>
-                ` : ''}
+            <div class="item-selection">
+                ${character.choiceItems.map(item => `
+                    <button class="item-choice ${selectedItem === item ? 'selected' : ''}" data-item="${item}">
+                        ${item}
+                    </button>
+                `).join('')}
             </div>
-
-            <div class="character-items">
-                <div class="default-items">
-                    <h4>Стартовые вещи:</h4>
-                    <ul>
-                        ${character.defaultItems.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                </div>
-                ${character.choiceItems ? `
-                    <div class="item-choices">
-                        <h4>Выберите дополнительный предмет:</h4>
-                        ${character.choiceItems.map(item => `
-                            <button class="item-choice equipment-item selectable ${selectedItem === item ? 'selected' : ''}" 
-                                    data-item="${item}">
-                                <div class="item-with-tooltip">
-                                    <span class="item-name">${item}</span>
-                                    <div class="item-tooltip">
-                                        <div class="item-type">Предмет</div>
-                                        <div class="item-description">Описание предмета ${item}</div>
-                                    </div>
-                                </div>
-                            </button>
-                        `).join('')}
-                    </div>
-                ` : ''}
-            </div>
-
-            ${character.quote ? `
-                <div class="character-quote">
-                    "${character.quote}"
-                </div>
-            ` : ''}
         </div>
         <button class="close-expanded">&times;</button>
     </div>
@@ -181,53 +124,38 @@ export const templates = {
         try {
             return `
                 <div class="character-card" data-character="${character.id}">
-                    <div class="character-content">
+                    <div class="character-left-side">
                         <div class="character-portrait" style="background-image: url('character/${character.id}.jpg')"></div>
-                        <div class="character-info">
-                            <h3 class="character-title">${character.name}</h3>
-                            <div class="character-role">${character.role}</div>
-                            
-                            <div class="character-abilities">
-                                <div class="ability-primary">
-                                    <div class="ability-name">${character.ability.name}</div>
-                                    <div class="ability-description">${character.ability.description}</div>
-                                </div>
+                        <div class="character-items">
+                            <div class="default-items">
+                                <h4>Стартовое имущество:</h4>
+                                <ul>
+                                    ${character.defaultItems.map(item => `<li>• ${item}</li>`).join('')}
+                                </ul>
                             </div>
-
-                            <div class="stats-grid">
-                                <div class="stat-row">
-                                    <div class="stat-icon health"></div>
-                                    <div class="stat-value">${character.stats.health}</div>
-                                </div>
-                                <div class="stat-row">
-                                    <div class="stat-icon sanity"></div>
-                                    <div class="stat-value">${character.stats.sanity}</div>
-                                </div>
+                            <div class="item-choices">
+                                <h4>Выберите одно:</h4>
+                                ${character.choiceItems.map(item => `
+                                    <button class="item-choice" data-item="${item}">
+                                        • ${item}
+                                    </button>
+                                `).join('')}
                             </div>
-
-                            <div class="character-items">
-                                <div class="default-items">
-                                    <h4>Стартовые вещи:</h4>
-                                    <ul>
-                                        ${character.defaultItems.map(item => `<li>${item}</li>`).join('')}
-                                    </ul>
-                                </div>
-                                ${character.choiceItems ? `
-                                    <div class="item-choices">
-                                        <h4>Выберите дополнительный предмет:</h4>
-                                        ${character.choiceItems.map(item => `
-                                            <button class="item-choice" data-item="${item}">
-                                                <div class="item-with-tooltip">
-                                                    <span class="item-name">${item}</span>
-                                                    <div class="item-tooltip">
-                                                        <div class="item-type">Предмет</div>
-                                                        <div class="item-description">Описание предмета ${item}</div>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
+                        </div>
+                    </div>
+                    <div class="character-right-side">
+                        <div class="story-section">
+                            <h3>С чего всё началось</h3>
+                            <p>${character.story}</p>
+                        </div>
+                        <div class="role-section">
+                            <div class="primary-role">
+                                <h3>Основная роль</h3>
+                                <p>Будучи хранителем, вы отвечаете за защиту других сыщиков. Например, вы можете избавляться от монстров прежде, чем они станут серьезной угрозой, или помогать своим товарищам приходить в себя после ранений.</p>
+                            </div>
+                            <div class="secondary-role">
+                                <h3>Второстепенная роль</h3>
+                                <p>Будучи бойцом, вы способны умело противостоять несумолимым ударам мифа и помогать в этом своим товарищам. Взаимопомощь приведёт вас к победе.</p>
                             </div>
                         </div>
                     </div>
@@ -330,5 +258,5 @@ export function locationTemplate(location) {
     `;
 }
 
-// Экспортируем объект templates под именем cardTemplates для обратной совместимости
+// Экспортируем объект templates под именем cardTemplates
 export const cardTemplates = templates; 
