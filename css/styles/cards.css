@@ -182,23 +182,23 @@
 }
 
 .character-items {
-    height: 40%;
-    padding: 15px;
-    color: #f4e4bc;
-    overflow-y: auto;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(26, 20, 38, 0.6);
+    border-radius: 4px;
 }
 
 .default-items h4,
 .item-choices h4 {
+    color: #c0a45e;
     font-size: 14px;
-    margin-bottom: 10px;
-    color: #ffd700;
+    margin-bottom: 8px;
 }
 
 .default-items ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 15px 0;
+    margin: 0;
 }
 
 .default-items li {
@@ -211,21 +211,97 @@
     margin-top: 10px;
 }
 
-.item-choice {
-    display: block;
+.item-choice-wrapper {
+    position: relative;
     width: 100%;
-    text-align: left;
-    padding: 5px 10px;
     margin-bottom: 5px;
+    overflow: visible;
+}
+
+.item-choice {
+    position: relative;
     background: none;
     border: none;
-    color: #f4e4bc;
-    font-size: 14px;
+    color: #f2d492;
+    padding: 5px 10px;
     cursor: pointer;
-    transition: color 0.2s;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.3s ease;
+    overflow: visible;
 }
 
 .item-choice:hover {
+    background: rgba(242, 212, 146, 0.1);
+}
+
+.item-choice .item-with-tooltip {
+    max-width: calc(100% - 20px);
+}
+
+.item-choice .item-name {
+    color: inherit;
+}
+
+.item-with-tooltip {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.item-name {
+    cursor: pointer;
+    color: #f2d492;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-tooltip {
+    position: absolute;
+    background: #1a1426;
+    border: 1px solid #ffd700;
+    border-radius: 4px;
+    padding: 10px;
+    width: 280px;
+    color: #f2d492;
+    font-size: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 99999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 5px;
+}
+
+.item-with-tooltip:hover .item-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.item-type {
+    color: #ffd700;
+    font-style: italic;
+    margin-bottom: 5px;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.item-description {
+    line-height: 1.4;
+    color: #f4e4bc;
+    font-size: 13px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.item-choice.selected {
+    background: rgba(242, 212, 146, 0.2);
     color: #ffd700;
 }
 
@@ -494,71 +570,18 @@
 .stat-icon.strength { background-image: url('../images/icons/strength.png'); }
 .stat-icon.will { background-image: url('../images/icons/will.png'); }
 
-/* Стили для всплывающих подсказок */
-.item-with-tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.item-name {
-    cursor: pointer;
-    color: #f2d492;
-}
-
-.item-tooltip {
-    visibility: hidden;
-    position: absolute;
-    z-index: 100;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px;
-    background: rgba(26, 20, 38, 0.95);
-    border: 1px solid #634d32;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    width: 250px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
+/* Добавляем эффект при появлении подсказки */
 .item-with-tooltip:hover .item-tooltip {
-    visibility: visible;
-    opacity: 1;
+    animation: tooltipAppear 0.2s ease forwards;
 }
 
-.item-type {
-    font-size: 12px;
-    color: #c0a45e;
-    margin-bottom: 5px;
-    font-style: italic;
-}
-
-.item-description {
-    font-size: 14px;
-    color: #e0d6c3;
-    line-height: 1.4;
-}
-
-/* Стрелочка для подсказки */
-.item-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #634d32 transparent transparent transparent;
-}
-
-/* Специальные стили для подсказок в кнопках выбора предметов */
-.item-choice .item-with-tooltip {
-    display: inline;
-}
-
-.item-choice .item-tooltip {
-    text-align: left;
-    white-space: normal;
+@keyframes tooltipAppear {
+    from {
+        opacity: 0;
+        transform: translate(10px, -90%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(10px, -100%);
+    }
 } 

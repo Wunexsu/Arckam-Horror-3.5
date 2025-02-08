@@ -3,19 +3,32 @@ import { locations } from '../../../data/locations.js';
 
 // Шаблон для предмета с подсказкой
 const itemWithTooltip = (itemName) => {
-    const item = items[itemName];
-    if (!item) return itemName;
+    const itemData = items[itemName];
+    if (!itemData) {
+        // Если это просто строка (например, "$3"), возвращаем её как есть
+        return `<span class="item-name">${itemName}</span>`;
+    }
 
     return `
-        <div class="item-with-tooltip">
+        <div class="item-with-tooltip" onmousemove="updateTooltipPosition(event)">
             <span class="item-name">${itemName}</span>
             <div class="item-tooltip">
-                <div class="item-type">${item.type || 'Предмет'}</div>
-                <div class="item-description">${item.description || 'Описание отсутствует'}</div>
+                <div class="item-type">${itemData.type}</div>
+                <div class="item-description">${itemData.description}</div>
             </div>
         </div>
     `;
 };
+
+// Функция для обновления позиции подсказки
+function updateTooltipPosition(event) {
+    const tooltip = event.currentTarget.querySelector('.item-tooltip');
+    if (tooltip) {
+        const padding = 10;
+        tooltip.style.left = `${event.clientX}px`;
+        tooltip.style.top = `${event.clientY - padding}px`;
+    }
+}
 
 // Шаблон для предмета в раскрытой карточке
 const expandedItemTemplate = (item, isSelectable = false, isSelected = false) => {
@@ -135,11 +148,7 @@ export const templates = {
                             </div>
                             <div class="item-choices">
                                 <h4>Выберите одно:</h4>
-                                ${character.choiceItems.map(item => `
-                                    <button class="item-choice" data-item="${item}">
-                                        • ${itemWithTooltip(item)}
-                                    </button>
-                                `).join('')}
+                                ${character.choiceItems.map((item, index) => itemChoiceTemplate(item, index)).join('')}
                             </div>
                         </div>
                     </div>
@@ -295,6 +304,16 @@ export function locationTemplate(location) {
                 <h2>${location.name}</h2>
                 <p class="location-description">${location.description}</p>
             </div>
+        </div>
+    `;
+}
+
+function itemChoiceTemplate(item, index) {
+    return `
+        <div class="item-choice-wrapper">
+            <button class="item-choice" data-index="${index}">
+                ${itemWithTooltip(item)}
+            </button>
         </div>
     `;
 }
