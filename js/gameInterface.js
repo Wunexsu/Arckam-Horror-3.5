@@ -377,9 +377,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Обработчик выбора сценария
     document.addEventListener('scenarioSelected', (event) => {
-        const { scenarioId } = event.detail;
-        console.log(`Выбран сценарий: ${scenarioId}`);
-        gameState.selectedScenario = scenarios[scenarioId];
+        const scenario = event.detail.scenario;
+        const scenarioId = event.detail.scenarioId || scenario.id;
+        console.log(`Выбран сценарий: ${scenario.title} (ID: ${scenarioId})`);
+        gameState.selectedScenario = scenario;
         showScreen('characterSelect');
         // Загружаем персонажей после выбора сценария
         loadCharacters();

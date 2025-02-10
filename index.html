@@ -61,7 +61,8 @@
             </div>
         </div>
 
-        <div class="scenarios-container">
+        <!-- Контейнер для карточек сценариев -->
+        <div id="scenarios-container" class="scenarios-container">
             <!-- Карточки сценариев будут добавлены динамически -->
         </div>
     </div>
@@ -69,89 +70,20 @@
     <!-- Экран выбора персонажа -->
     <div class="screen character-mode">
         <h1>Выберите персонажа</h1>
-        <div class="characters-container">
-            <!-- Сюда будут добавлены карточки персонажей -->
+        <div class="character-selection-wrapper">
+            <div id="character-selection" class="characters-container">
+                <!-- Карточки персонажей будут добавлены динамически -->
+            </div>
+            <div class="start-game-container">
+                <button class="start-game-btn" disabled>Начать игру</button>
+            </div>
         </div>
     </div>
 
     <!-- Экран игры -->
     <div class="screen game-mode">
-        <div class="game-interface">
-            <!-- Верхняя панель -->
-            <div class="top-panel">
-                <div class="character-stats">
-                    <div class="stat health">
-                        <span class="stat-label">Здоровье:</span>
-                        <div class="stat-bar">
-                            <div class="bar-fill"></div>
-                        </div>
-                        <span class="stat-value">0/0</span>
-                    </div>
-                    <div class="stat sanity">
-                        <span class="stat-label">Рассудок:</span>
-                        <div class="stat-bar">
-                            <div class="bar-fill"></div>
-                        </div>
-                        <span class="stat-value">0/0</span>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <div class="scenario-title"></div>
-                    <div class="turn-counter">Ход: 1</div>
-                </div>
-            </div>
-
-            <!-- Основной интерфейс -->
-            <div class="main-interface">
-                <!-- Левая панель -->
-                <div class="left-panel">
-                    <div class="location-info">
-                        <h2>Текущая локация</h2>
-                        <div class="location-name"></div>
-                        <div class="location-description"></div>
-                    </div>
-                    <div class="available-actions">
-                        <h2>Доступные действия</h2>
-                        <div class="action-buttons">
-                            <!-- Кнопки действий будут добавлены динамически -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Центральная область -->
-                <div class="game-area">
-                    <div class="map-container">
-                        <!-- Карта будет добавлена динамически -->
-                    </div>
-                    <div class="event-display">
-                        <!-- Отображение событий -->
-                    </div>
-                </div>
-
-                <!-- Правая панель -->
-                <div class="right-panel">
-                    <div class="inventory">
-                        <h2>Инвентарь</h2>
-                        <div class="inventory-slots">
-                            <!-- Слоты инвентаря будут добавлены динамически -->
-                        </div>
-                    </div>
-                    <div class="chat-area">
-                        <div class="chat-tabs">
-                            <button class="tab-btn active" data-tab="game-log">Игровой журнал</button>
-                            <button class="tab-btn" data-tab="combat-log">Журнал боя</button>
-                        </div>
-                        <div class="chat-content">
-                            <div class="chat-tab game-log active">
-                                <!-- Игровые сообщения -->
-                            </div>
-                            <div class="chat-tab combat-log">
-                                <!-- Боевые сообщения -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div id="gameInterface" style="display: none;">
+            <!-- Игровой интерфейс будет добавлен динамически -->
         </div>
     </div>
 
@@ -170,7 +102,6 @@
     <!-- Сообщения игры -->
     <div class="game-message"></div>
 
-    <div id="app"></div>
     <script type="module" src="js/game.js"></script>
 </body>
 </html> 

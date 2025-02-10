@@ -1,15 +1,29 @@
-import { characters } from './data/characters.js';
-import { cardTemplates } from './templates/cardTemplates.js';
+import { characters } from '../../data/characters.js';
+import { cardTemplates } from '../templates/cardTemplates.js';
+import { items } from '../../data/items.js';
+
+console.log('Characters imported:', characters);
+console.log('Card templates imported:', cardTemplates);
+console.log('Items imported:', items);
 
 export class CharacterSelection {
-    constructor() {
+    constructor(container, scenario) {
+        if (!container) {
+            throw new Error('Container is required for CharacterSelection');
+        }
+        console.log('CharacterSelection constructor called with container:', container);
+        console.log('Scenario:', scenario);
+        
         this.selectedCharacter = null;
-        this.selectedItems = new Map();
-        this.container = document.querySelector('.characters-container');
+        this.selectedItems = new Set();
+        this.container = container;
+        this.scenario = scenario;
         this.expandedCard = null;
         this.overlay = this.createOverlay();
         document.body.appendChild(this.overlay);
-        this.init();
+        this.startGameBtn = document.querySelector('.start-game-btn');
+        this.startGameHandler = () => this.startGame();
+        this.initialize();
     }
 
     createOverlay() {
@@ -19,108 +33,151 @@ export class CharacterSelection {
         return overlay;
     }
 
-    init() {
-        this.renderCharacters();
+    initialize() {
+        console.log('Initializing CharacterSelection');
+        this.container.innerHTML = '';
+        this.removeEventListeners();
+        
+        console.log('Characters data:', characters);
+        const charactersArray = Object.values(characters);
+        console.log('Available characters:', charactersArray);
+        
+        charactersArray.forEach(character => {
+            console.log('Creating card for character:', character);
+            const characterCard = cardTemplates.characterCard(character);
+            console.log('Generated HTML:', characterCard);
+            this.container.insertAdjacentHTML('beforeend', characterCard);
+        });
+        
         this.addEventListeners();
+        this.updateStartGameButton();
     }
 
-    renderCharacters() {
-        const container = document.querySelector('.characters-container');
-        if (!container) return;
-
-        container.innerHTML = '';
-        
-        Object.entries(characters).forEach(([id, character]) => {
-            const card = document.createElement('div');
-            card.className = 'character-card';
-            card.setAttribute('data-character', id);
-            card.innerHTML = cardTemplates.characterCard(character);
-            container.appendChild(card);
-        });
+    removeEventListeners() {
+        if (this.startGameBtn) {
+            this.startGameBtn.removeEventListener('click', this.startGameHandler);
+        }
     }
 
     addEventListeners() {
-        const cards = document.querySelectorAll('.character-card');
+        console.log('Adding event listeners');
+        this.container.addEventListener('click', (event) => {
+            const characterCard = event.target.closest('.character-card');
+            if (characterCard) {
+                this.handleCharacterSelection(characterCard);
+            }
+
+            const itemChoice = event.target.closest('.item-choice');
+            if (itemChoice) {
+                this.handleItemSelection(itemChoice);
+            }
+        });
+    }
+
+    handleCharacterSelection(card) {
+        console.log('Character card clicked:', card);
         
-        cards.forEach(card => {
-            card.addEventListener('click', () => {
-                const characterId = card.getAttribute('data-character');
-                this.selectCharacter(characterId);
-            });
-        });
-
-        // Обработчики выбора предметов
-        document.querySelectorAll('.item-choice').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const characterId = e.target.closest('.character-card').getAttribute('data-character');
-                const itemName = e.target.textContent.trim();
-                this.selectItem(characterId, itemName, e.target);
-            });
-        });
-    }
-
-    selectCharacter(characterId) {
-        const character = characters[characterId];
-        if (!character) return;
-
-        // Убираем выделение со всех карточек
-        document.querySelectorAll('.character-card').forEach(card => {
-            card.classList.remove('active');
-        });
-
-        // Выделяем выбранную карточку
-        const selectedCard = document.querySelector(`[data-character="${characterId}"]`);
-        if (selectedCard) {
-            selectedCard.classList.add('active');
+        const previousCard = this.container.querySelector('.character-card.active');
+        if (previousCard) {
+            previousCard.classList.remove('active');
+            this.disableItemChoices(previousCard);
         }
 
-        this.selectedCharacter = character;
-        this.onCharacterSelected(character);
+        card.classList.add('active');
+
+        const characterId = card.getAttribute('data-character');
+        console.log('Character ID:', characterId);
+        this.selectedCharacter = characters[characterId];
+        console.log('Selected character:', this.selectedCharacter);
+
+        this.selectedItems.clear();
+        this.enableItemChoices(card);
+        
+        this.updateStartGameButton();
     }
 
-    selectItem(characterId, itemName, element) {
-        const character = characters[characterId];
-        if (!character) return;
-
-        const card = element.closest('.character-card');
-        if (!card) return;
-
-        // Убираем выделение со всех предметов в этой карточке
-        card.querySelectorAll('.item-choice').forEach(item => {
-            item.classList.remove('selected');
-        });
-
-        // Выделяем выбранный предмет
-        element.classList.add('selected');
-
-        // Сохраняем выбор
-        this.selectedItems.set(characterId, itemName);
-
-        // Обновляем состояние персонажа и вызываем событие
-        if (this.selectedCharacter && this.selectedCharacter.id === characterId) {
-            const updatedCharacter = {
-                ...this.selectedCharacter,
-                selectedItem: itemName
-            };
-            this.selectedCharacter = updatedCharacter;
-            this.onCharacterSelected(updatedCharacter);
+    handleItemSelection(choice) {
+        if (!choice.classList.contains('enabled')) {
+            return;
+        }
+        
+        console.log('Item choice clicked:', choice);
+        
+        const previousChoice = choice.parentElement.querySelector('.item-choice.selected');
+        if (previousChoice) {
+            previousChoice.classList.remove('selected');
+            this.selectedItems.delete(previousChoice.getAttribute('data-item'));
         }
 
-        console.log(`Выбран предмет "${itemName}" для персонажа ${characterId}`);
+        choice.classList.add('selected');
+        this.selectedItems.add(choice.getAttribute('data-item'));
+        
+        console.log('Selected items:', Array.from(this.selectedItems));
+        
+        this.updateStartGameButton();
     }
 
-    onCharacterSelected(character) {
-        // Создаем событие выбора персонажа
-        const event = new CustomEvent('characterSelected', {
-            detail: { character }
+    addItemTooltips(card, character) {
+        const itemElements = card.querySelectorAll('.default-items li, .item-choice');
+        itemElements.forEach(element => {
+            const itemName = element.textContent.trim();
+            const item = items[itemName];
+            if (item) {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'item-tooltip';
+                tooltip.innerHTML = `
+                    <div class="item-type">${item.type}</div>
+                    <div class="item-description">${item.description}</div>
+                `;
+                element.appendChild(tooltip);
+            }
         });
-        document.dispatchEvent(event);
-
-        console.log('Выбран персонаж:', character.name);
     }
 
-    getSelectedCharacter() {
-        return this.selectedCharacter;
+    enableItemChoices(card) {
+        const itemChoices = card.querySelectorAll('.item-choice');
+        itemChoices.forEach(choice => {
+            choice.classList.add('enabled');
+        });
+    }
+
+    disableItemChoices(card) {
+        const itemChoices = card.querySelectorAll('.item-choice');
+        itemChoices.forEach(choice => {
+            choice.classList.remove('enabled', 'selected');
+        });
+    }
+
+    updateStartGameButton() {
+        if (this.startGameBtn) {
+            const canStartGame = this.selectedCharacter && this.selectedItems.size > 0;
+            this.startGameBtn.disabled = !canStartGame;
+            
+            if (canStartGame) {
+                this.startGameBtn.classList.add('visible');
+                this.startGameBtn.removeEventListener('click', this.startGameHandler);
+                this.startGameBtn.addEventListener('click', this.startGameHandler);
+            } else {
+                this.startGameBtn.classList.remove('visible');
+            }
+        }
+    }
+
+    startGame() {
+        if (this.selectedCharacter && this.selectedItems.size > 0) {
+            console.log('Starting game with:', {
+                character: this.selectedCharacter,
+                items: Array.from(this.selectedItems)
+            });
+            
+            const gameStartEvent = new CustomEvent('gameStart', {
+                detail: {
+                    character: this.selectedCharacter,
+                    selectedItems: Array.from(this.selectedItems)
+                }
+            });
+            document.dispatchEvent(gameStartEvent);
+        }
     }
 
     closeExpandedCard() {

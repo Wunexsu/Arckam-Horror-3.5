@@ -1,4 +1,4 @@
-import { cardTemplates } from './templates/cardTemplates.js';
+import { cardTemplates } from '../templates/cardTemplates.js';
 import { scenarios } from '../../data/scenarios.js';
 
 export class ScenarioCard {
@@ -12,7 +12,7 @@ export class ScenarioCard {
 
         try {
             this.scenario = scenario;
-            this.element = this.createElement();
+            this.element = this.createCard();
             this.addEventListeners();
             console.log('Карточка сценария создана успешно:', scenario.id);
         } catch (error) {
@@ -59,96 +59,55 @@ export class ScenarioCard {
         }
     }
 
-    createElement() {
-        try {
-            const card = document.createElement('div');
-            card.className = 'scenario-card';
-            card.setAttribute('data-scenario', this.scenario.id);
-            
-            card.innerHTML = `
-                <div class="card-content">
-                    <div class="scenario-image" style="background-image: url('${this.scenario.image}')"></div>
-                    <div class="scenario-overlay">
-                        <h3 class="scenario-title">${this.scenario.title}</h3>
-                        <p class="scenario-description">${this.scenario.description}</p>
-                        <div class="scenario-stats">
-                            <div class="stat-box">
-                                <div class="stat-label">Сложность</div>
-                                <div class="stat-value">${this.scenario.difficulty}</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-label">Время</div>
-                                <div class="stat-value">${this.scenario.estimatedTime}</div>
-                            </div>
-                        </div>
-                        <div class="scenario-details">
-                            <div class="scenario-location">Начальная локация: ${this.scenario.startLocation}</div>
-                            <div class="scenario-monsters">Монстры: ${Object.keys(this.scenario.monsters).length}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            return card;
-        } catch (error) {
-            console.error('Ошибка при создании элемента карточки:', error);
-            return null;
-        }
+    createCard() {
+        const card = document.createElement('div');
+        card.className = 'scenario-card';
+        card.dataset.scenario = this.scenario.id;
+        card.innerHTML = cardTemplates.scenarioCard(this.scenario);
+        return card;
     }
 
     addEventListeners() {
-        try {
-            if (!this.element) {
-                throw new Error('Элемент карточки не создан');
-            }
-
-            this.element.addEventListener('click', () => {
-                try {
-                    // Убираем активный класс у всех карточек
-                    document.querySelectorAll('.scenario-card').forEach(card => {
-                        card.classList.remove('active');
-                    });
-                    
-                    // Добавляем активный класс текущей карточке
-                    this.element.classList.add('active');
-                    
-                    // Создаем событие выбора сценария
-                    const event = new CustomEvent('scenarioSelected', {
-                        detail: { scenario: this.scenario }
-                    });
-                    document.dispatchEvent(event);
-                    
-                    console.log('Сценарий выбран:', this.scenario.id);
-                } catch (error) {
-                    console.error('Ошибка при обработке клика по карточке:', error);
-                }
+        this.element.addEventListener('click', (e) => {
+            e.preventDefault();
+            const allCards = document.querySelectorAll('.scenario-card');
+            allCards.forEach(card => card.classList.remove('active'));
+            this.element.classList.add('active');
+            
+            const event = new CustomEvent('scenarioSelected', {
+                detail: {
+                    scenario: this.scenario,
+                    element: this.element
+                },
+                bubbles: true
             });
-
-            console.log('Обработчики событий добавлены для карточки:', this.scenario?.id);
-        } catch (error) {
-            console.error('Ошибка при добавлении обработчиков событий:', error);
-        }
+            this.element.dispatchEvent(event);
+        });
     }
 
     static loadScenarios(container) {
-        console.log('Начало загрузки сценариев...');
-        
         if (!container) {
             console.error('Контейнер для сценариев не найден');
             return;
         }
 
         try {
-            console.log('Доступные сценарии:', Object.keys(scenarios));
+            // Очищаем контейнер
+            container.innerHTML = '';
             
-            Object.values(scenarios).forEach(scenario => {
+            // Преобразуем объект сценариев в массив
+            const scenariosArray = Object.values(scenarios);
+            console.log('Доступные сценарии:', scenariosArray);
+            
+            // Создаем карточки для каждого сценария
+            scenariosArray.forEach((scenario, index) => {
                 try {
                     const card = new ScenarioCard(scenario);
                     if (card.element) {
+                        // Добавляем задержку анимации
+                        card.element.style.animationDelay = `${index * 150}ms`;
                         container.appendChild(card.element);
                         console.log('Карточка добавлена в контейнер:', scenario.id);
-                    } else {
-                        console.error('Не удалось создать элемент карточки для сценария:', scenario.id);
                     }
                 } catch (error) {
                     console.error('Ошибка при создании карточки для сценария:', scenario.id, error);

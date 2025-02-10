@@ -20,12 +20,63 @@ body {
     width: 100%;
     min-height: 100vh;
     padding: 2rem;
+    box-sizing: border-box;
 }
 
 .screen.active {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* Игровой интерфейс */
+#gameInterface {
+    display: none;
+    width: 100%;
+    height: 100vh;
+}
+
+#gameInterface.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Экран выбора сценария */
+.scenario-mode {
+    background-color: #0a0a0f;
+}
+
+/* Экран выбора персонажа */
+.character-mode {
+    background-color: #0a0a0f;
+    position: relative;
+    overflow: hidden;
+}
+
+.character-selection-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-bottom: 100px; /* Место для кнопки */
+}
+
+.characters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+/* Экран игры */
+.game-mode {
+    background-color: #0a0a0f;
+    padding: 0;
 }
 
 /* Заголовки */
@@ -323,4 +374,69 @@ input:checked + .slider:before {
     color: #f2d492;
     font-size: 0.9rem;
     line-height: 1.4;
+}
+
+.start-game-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(transparent, rgba(10, 10, 15, 0.9) 20%, #0a0a0f);
+    display: flex;
+    justify-content: center;
+    z-index: 100;
+}
+
+.start-game-btn {
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    color: #f2d492;
+    background: #2d1e15;
+    border: 2px solid #634d32;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+}
+
+.start-game-btn:not(:disabled) {
+    opacity: 1;
+    animation: pulseButton 2s infinite;
+}
+
+.start-game-btn:hover:not(:disabled) {
+    background: #3a291e;
+    border-color: #f2d492;
+    transform: translateY(-2px);
+}
+
+.start-game-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+@keyframes pulseButton {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Стили для карточек персонажей */
+.character-card {
+    background: rgba(45, 30, 21, 0.8);
+    border: 2px solid #634d32;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.character-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.character-card.active {
+    border-color: #f2d492;
+    box-shadow: 0 0 20px rgba(242, 212, 146, 0.3);
 } 
