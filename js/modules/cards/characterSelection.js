@@ -49,18 +49,34 @@ export class CharacterSelection {
             this.container.insertAdjacentHTML('beforeend', characterCard);
         });
         
+        this.initStartGameButton();
         this.addEventListeners();
-        this.updateStartGameButton();
+    }
+
+    initStartGameButton() {
+        const startButtons = document.querySelectorAll('.start-game-btn');
+        startButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Start button clicked, disabled:', btn.disabled);
+                if (!btn.disabled) {
+                    this.startGame();
+                }
+            });
+        });
     }
 
     removeEventListeners() {
-        if (this.startGameBtn) {
-            this.startGameBtn.removeEventListener('click', this.startGameHandler);
-        }
+        const startButtons = document.querySelectorAll('.start-game-btn');
+        startButtons.forEach(btn => {
+            btn.removeEventListener('click', this.startGameHandler);
+        });
     }
 
     addEventListeners() {
         console.log('Adding event listeners');
+        
         this.container.addEventListener('click', (event) => {
             const characterCard = event.target.closest('.character-card');
             if (characterCard) {
@@ -103,14 +119,15 @@ export class CharacterSelection {
         
         console.log('Item choice clicked:', choice);
         
-        const previousChoice = choice.parentElement.querySelector('.item-choice.selected');
-        if (previousChoice) {
-            previousChoice.classList.remove('selected');
-            this.selectedItems.delete(previousChoice.getAttribute('data-item'));
-        }
+        const itemChoices = choice.parentElement.querySelectorAll('.item-choice');
+        itemChoices.forEach(item => {
+            item.classList.remove('selected');
+            this.selectedItems.delete(item.getAttribute('data-item'));
+        });
 
         choice.classList.add('selected');
-        this.selectedItems.add(choice.getAttribute('data-item'));
+        const selectedItem = choice.getAttribute('data-item');
+        this.selectedItems.add(selectedItem);
         
         console.log('Selected items:', Array.from(this.selectedItems));
         
@@ -149,34 +166,65 @@ export class CharacterSelection {
     }
 
     updateStartGameButton() {
-        if (this.startGameBtn) {
-            const canStartGame = this.selectedCharacter && this.selectedItems.size > 0;
-            this.startGameBtn.disabled = !canStartGame;
+        const activeCard = document.querySelector('.character-card.active');
+        if (activeCard) {
+            const startGameContainer = activeCard.querySelector('.start-game-container');
+            const startGameBtn = activeCard.querySelector('.start-game-btn');
             
-            if (canStartGame) {
-                this.startGameBtn.classList.add('visible');
-                this.startGameBtn.removeEventListener('click', this.startGameHandler);
-                this.startGameBtn.addEventListener('click', this.startGameHandler);
-            } else {
-                this.startGameBtn.classList.remove('visible');
+            if (startGameContainer && startGameBtn) {
+                const canStartGame = this.selectedCharacter && this.selectedItems.size > 0;
+                startGameBtn.disabled = !canStartGame;
+                
+                if (canStartGame) {
+                    startGameContainer.classList.add('visible');
+                    console.log('Enabling start game button');
+                } else {
+                    startGameContainer.classList.remove('visible');
+                    console.log('Disabling start game button');
+                }
             }
         }
     }
 
     startGame() {
+        console.log('startGame called');
         if (this.selectedCharacter && this.selectedItems.size > 0) {
             console.log('Starting game with:', {
                 character: this.selectedCharacter,
                 items: Array.from(this.selectedItems)
             });
             
-            const gameStartEvent = new CustomEvent('gameStart', {
-                detail: {
-                    character: this.selectedCharacter,
-                    selectedItems: Array.from(this.selectedItems)
+            try {
+                const gameStartEvent = new CustomEvent('gameStart', {
+                    detail: {
+                        character: this.selectedCharacter,
+                        selectedItems: Array.from(this.selectedItems)
+                    },
+                    bubbles: true
+                });
+                
+                document.dispatchEvent(gameStartEvent);
+                console.log('Game start event dispatched');
+                
+                const characterMode = document.querySelector('.character-mode');
+                const gameMode = document.querySelector('.game-mode');
+                
+                if (characterMode && gameMode) {
+                    characterMode.style.display = 'none';
+                    gameMode.style.display = 'flex';
+                    gameMode.classList.add('active');
+                    console.log('Switched to game mode');
+                } else {
+                    console.error('Game mode elements not found');
                 }
+            } catch (error) {
+                console.error('Error in startGame:', error);
+            }
+        } else {
+            console.log('Cannot start game: missing character or items', {
+                hasCharacter: !!this.selectedCharacter,
+                selectedItems: this.selectedItems.size
             });
-            document.dispatchEvent(gameStartEvent);
         }
     }
 

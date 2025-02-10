@@ -39,33 +39,75 @@ export const cardTemplates = {
                 <div class="character-portrait" style="background-image: url('character/${character.id}.jpg')"></div>
                 
                 <div class="character-stats">
-                    <div class="stat-row">
-                        <div class="stat-icon health"></div>
-                        <div class="stat-value">${character.stats?.health || 0}</div>
-                        <div class="stat-icon sanity"></div>
-                        <div class="stat-value">${character.stats?.sanity || 0}</div>
+                    <div class="stats-column">
+                        <div class="stat-group">
+                            <div class="stat-icon health"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">❤️ Здоровье</div>
+                                <div class="stat-value">${character.stats?.health || 0}</div>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-icon knowledge"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">📚 Знания</div>
+                                <div class="stat-value">${character.stats?.knowledge || 0}</div>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-icon observation"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">👁️ Внимание</div>
+                                <div class="stat-value">${character.stats?.observation || 0}</div>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-icon will"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">✨ Воля</div>
+                                <div class="stat-value">${character.stats?.will || 0}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-row">
-                        <div class="stat-icon knowledge"></div>
-                        <div class="stat-value">${character.stats?.knowledge || 0}</div>
-                    </div>
-                    <div class="stat-row">
-                        <div class="stat-icon influence"></div>
-                        <div class="stat-value">${character.stats?.influence || 0}</div>
-                    </div>
-                    <div class="stat-row">
-                        <div class="stat-icon observation"></div>
-                        <div class="stat-value">${character.stats?.observation || 0}</div>
-                    </div>
-                    <div class="stat-row">
-                        <div class="stat-icon strength"></div>
-                        <div class="stat-value">${character.stats?.strength || 0}</div>
-                    </div>
-                    <div class="stat-row">
-                        <div class="stat-icon will"></div>
-                        <div class="stat-value">${character.stats?.will || 0}</div>
+                    <div class="stats-column">
+                        <div class="stat-group">
+                            <div class="stat-icon sanity"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">🧠 Рассудок</div>
+                                <div class="stat-value">${character.stats?.sanity || 0}</div>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-icon influence"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">💬 Общение</div>
+                                <div class="stat-value">${character.stats?.influence || 0}</div>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-icon strength"></div>
+                            <div class="stat-info">
+                                <div class="stat-label">💪 Сила</div>
+                                <div class="stat-value">${character.stats?.strength || 0}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="character-abilities">
+                ${character.ability ? `
+                    <div class="ability-primary">
+                        <div class="ability-name">${character.ability.name}</div>
+                        <div class="ability-description">${character.ability.description}</div>
+                    </div>
+                ` : ''}
+                ${character.secondaryAbility ? `
+                    <div class="ability-secondary">
+                        <div class="ability-name">${character.secondaryAbility.name}</div>
+                        <div class="ability-description">${character.secondaryAbility.description}</div>
+                    </div>
+                ` : ''}
             </div>
 
             <div class="character-items">
@@ -87,9 +129,9 @@ export const cardTemplates = {
                 ` : ''}
                 ${character.choiceItems?.length ? `
                     <div class="item-choices">
-                        <h4>Выберите одно:</h4>
+                        <h4>Выберите один предмет:</h4>
                         ${character.choiceItems.map(item => `
-                            <div class="item-choice item-with-tooltip" data-item="${item}">
+                            <div class="item-choice" data-item="${item}">
                                 ${item}
                                 <div class="item-tooltip">
                                     <div class="item-type">${items[item]?.type || 'Предмет'}</div>

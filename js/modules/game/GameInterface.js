@@ -2,11 +2,146 @@ import { cardTemplates } from '../cards/templates/cardTemplates.js';
 import { locations } from '../../data/locations.js';
 
 export class GameInterface {
-    constructor(character, startLocation = 'square') {
+    constructor(character) {
+        if (!character) {
+            console.error('Character is required for GameInterface');
+            return;
+        }
+        console.log('Initializing GameInterface with character:', character);
         this.character = character;
-        this.currentLocation = locations[startLocation];
-        this.element = null;
-        this.initialize();
+    }
+
+    createTemplate() {
+        console.log('Creating game interface template');
+        return `
+            <div class="game-container">
+                <div class="top-panel">
+                    <div class="character-stats">
+                        <div class="stat-bar health">
+                            <div class="bar-fill" style="width: 100%"></div>
+                            <span class="bar-text">Здоровье: ${this.character.stats.health}/${this.character.stats.health}</span>
+                        </div>
+                        <div class="stat-bar sanity">
+                            <div class="bar-fill" style="width: 100%"></div>
+                            <span class="bar-text">Рассудок: ${this.character.stats.sanity}/${this.character.stats.sanity}</span>
+                        </div>
+                    </div>
+                    <div class="location-info">
+                        <h2>Аркхэм</h2>
+                        <div class="threat-level">Уровень угрозы: Низкий</div>
+                    </div>
+                </div>
+                <div class="game-area">
+                    <div class="message">Добро пожаловать в Аркхэм, ${this.character.name}!</div>
+                </div>
+                <div class="bottom-section">
+                    <div class="chat-players-container">
+                        <div class="chat-area">
+                            <div class="chat-messages">
+                                <div class="message">Система: Игра началась</div>
+                                <div class="message">Система: ${this.character.name} прибывает в Аркхэм</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navigation-panel">
+                        <div class="nav-buttons">
+                            <button class="nav-btn">Исследовать</button>
+                            <button class="nav-btn">Инвентарь</button>
+                            <button class="nav-btn">Карта</button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn">🔍</button>
+                            <button class="action-btn">⚔️</button>
+                            <button class="action-btn">📖</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    mount(container) {
+        if (!container) {
+            console.error('Container not found for mounting game interface');
+            return;
+        }
+
+        console.log('Mounting game interface to container:', container);
+        
+        try {
+            // Создаем шаблон
+            const template = this.createTemplate();
+            
+            // Очищаем контейнер и добавляем новый контент
+            container.innerHTML = template;
+            
+            // Добавляем обработчики событий
+            this.addEventListeners(container);
+            
+            console.log('Game interface mounted successfully');
+        } catch (error) {
+            console.error('Error mounting game interface:', error);
+        }
+    }
+
+    addEventListeners(container) {
+        console.log('Adding event listeners to game interface');
+        
+        const navButtons = container.querySelectorAll('.nav-btn');
+        const actionButtons = container.querySelectorAll('.action-btn');
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                console.log('Navigation button clicked:', button.textContent);
+                this.handleNavigation(button.textContent);
+            });
+        });
+
+        actionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                console.log('Action button clicked:', button.textContent);
+                this.handleAction(button.textContent);
+            });
+        });
+    }
+
+    handleNavigation(action) {
+        switch(action) {
+            case 'Исследовать':
+                this.addMessage('Исследуем текущую локацию...');
+                break;
+            case 'Инвентарь':
+                this.addMessage('Открываем инвентарь...');
+                break;
+            case 'Карта':
+                this.addMessage('Открываем карту...');
+                break;
+        }
+    }
+
+    handleAction(action) {
+        switch(action) {
+            case '🔍':
+                this.addMessage('Осматриваем окрестности...');
+                break;
+            case '⚔️':
+                this.addMessage('Готовимся к бою...');
+                break;
+            case '📖':
+                this.addMessage('Открываем журнал заданий...');
+                break;
+        }
+    }
+
+    addMessage(text) {
+        const chatMessages = document.querySelector('.chat-messages');
+        if (chatMessages) {
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.textContent = text;
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     }
 
     initialize() {
@@ -54,29 +189,6 @@ export class GameInterface {
                 this.switchTab(button);
             });
         });
-    }
-
-    handleAction(action) {
-        switch(action) {
-            case 'Исследовать':
-                this.investigate();
-                break;
-            case 'Журнал заданий':
-                this.openJournal();
-                break;
-            default:
-                console.log(`Выполняется действие: ${action}`);
-        }
-    }
-
-    investigate() {
-        this.addMessage(`Исследуем локацию: ${this.currentLocation.name}...`);
-        // Здесь будет логика исследования локации
-    }
-
-    openJournal() {
-        this.addMessage('Открыт журнал заданий');
-        // Здесь будет логика открытия журнала
     }
 
     changeLocation(locationId) {
@@ -141,18 +253,6 @@ export class GameInterface {
         selectedTab.classList.add('active');
     }
 
-    addMessage(text) {
-        const chatMessages = this.element.querySelector('.chat-messages');
-        const message = document.createElement('div');
-        message.className = 'message';
-        message.textContent = text;
-        chatMessages.appendChild(message);
-        
-        // Прокручиваем чат вниз
-        const chatArea = this.element.querySelector('.chat-area');
-        chatArea.scrollTop = chatArea.scrollHeight;
-    }
-
     updateHealth(current, max) {
         const healthBar = this.element.querySelector('.health-bar .bar-fill');
         const healthText = this.element.querySelector('.health-bar .bar-text');
@@ -167,10 +267,6 @@ export class GameInterface {
         
         sanityBar.style.width = `${(current / max) * 100}%`;
         sanityText.textContent = `Рассудок: ${current}/${max}`;
-    }
-
-    mount(container) {
-        container.appendChild(this.element);
     }
 
     unmount() {
