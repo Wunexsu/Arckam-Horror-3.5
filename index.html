@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/styles/main.css">
     <link rel="stylesheet" href="css/styles/cards.css">
     <link rel="stylesheet" href="css/styles/game.css">
+    <link rel="stylesheet" href="css/styles/mythos.css">
     <style>
         /* Базовые стили */
         body {
@@ -61,23 +62,14 @@
             </div>
         </div>
 
-        <!-- Контейнер для карточек сценариев -->
-        <div id="scenarios-container" class="scenarios-container">
-            <!-- Карточки сценариев будут добавлены динамически -->
-        </div>
+        <div id="scenarios-container" class="scenarios-container"></div>
     </div>
 
     <!-- Экран выбора персонажа -->
     <div class="screen character-mode">
         <h1>Выберите персонажа</h1>
-        <div class="character-selection-wrapper">
-            <div id="character-selection" class="characters-container">
-                <!-- Карточки персонажей будут добавлены динамически -->
-            </div>
-            <div class="start-game-container">
-                <button class="start-game-btn" disabled>Начать игру</button>
-            </div>
-        </div>
+        <div id="character-selection" class="character-selection"></div>
+        <button class="start-game-btn" disabled>Начать игру</button>
     </div>
 
     <!-- Экран игры -->
@@ -85,21 +77,10 @@
         <div id="gameInterface" class="game-interface"></div>
     </div>
 
-    <!-- Оверлей боя -->
-    <div class="combat-overlay" style="display: none;">
-        <div class="combat-interface">
-            <div class="combat-log"></div>
-            <div class="combat-actions">
-                <button class="combat-btn attack">Атака</button>
-                <button class="combat-btn dodge">Уклонение</button>
-                <button class="combat-btn spell">Заклинание</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Сообщения игры -->
-    <div class="game-message"></div>
+    <div id="game-messages" class="game-messages"></div>
 
-    <script type="module" src="js/game.js"></script>
+    <!-- Загрузка скриптов -->
+    <script type="module" src="/js/game.js"></script>
 </body>
 </html> 

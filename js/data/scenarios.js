@@ -1,10 +1,10 @@
 // Данные сценариев
-const scenarios = [
+export const scenarios = [
     {
         id: "azathoth",
         title: "Пришествие Азатота",
         description: "Древний бог пробуждается в Аркхэме, и его безумное присутствие угрожает разорвать саму ткань реальности. Вы должны остановить его пробуждение, пока не стало слишком поздно.",
-        image: "Resource/azathoth-card-bg.webp.jpg",
+        image: "images/scenarios/azathoth.jpg",
         startArea: "station",
         difficulty: "Средняя",
         estimatedTime: "2-3 часа",
@@ -57,7 +57,7 @@ const scenarios = [
         id: "cthulhu",
         title: "Зов Ктулху",
         description: "Древний спит в своём городе Р'льех, но его сны проникают в умы жителей Аркхэма. Культисты стремятся пробудить его, и только вы можете предотвратить катастрофу.",
-        image: "Resource/Ктулху2.jpg",
+        image: "images/scenarios/cthulhu.jpg",
         startArea: "port",
         difficulty: "Сложная",
         estimatedTime: "3-4 часа",
@@ -107,8 +107,6 @@ const scenarios = [
         }
     }
 ];
-
-export { scenarios };
 
 // Данные аномалий
 export const anomalies = {

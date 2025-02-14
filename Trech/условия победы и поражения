@@ -1,8 +1,0 @@
-function checkWinLose() {
-  if (gameState.threat >= 10) {
-    alert("Древний пробудился! Поражение.");
-  }
-  if (gameState.anomaliesClosed === 3) {
-    alert("Аномалии устранены! Победа!");
-  }
-}

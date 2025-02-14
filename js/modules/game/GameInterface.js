@@ -1,5 +1,6 @@
 import { cardTemplates } from '../cards/templates/cardTemplates.js';
 import { locations } from '../../data/locations.js';
+import { gameState } from '../../data/gameState.js';
 
 export class GameInterface {
     constructor(character) {
@@ -9,10 +10,13 @@ export class GameInterface {
         }
         console.log('Initializing GameInterface with character:', character);
         this.character = character;
+        this.currentLocation = 'station'; // Начальная локация - станция
     }
 
     createTemplate() {
-        console.log('Creating game interface template');
+        const location = locations[this.currentLocation];
+        console.log('Creating game interface template for location:', location);
+        
         return `
             <div class="game-container">
                 <div class="top-panel">
@@ -27,37 +31,137 @@ export class GameInterface {
                         </div>
                     </div>
                     <div class="location-info">
-                        <h2>Аркхэм</h2>
+                        <h2>${location.name}</h2>
                         <div class="threat-level">Уровень угрозы: Низкий</div>
                     </div>
                 </div>
                 <div class="game-area">
-                    <div class="message">Добро пожаловать в Аркхэм, ${this.character.name}!</div>
+                    <div class="location-image" style="background-image: url('${location.image}')"></div>
+                    <div class="location-description">${location.description}</div>
                 </div>
                 <div class="bottom-section">
                     <div class="chat-players-container">
                         <div class="chat-area">
                             <div class="chat-messages">
                                 <div class="message">Система: Игра началась</div>
-                                <div class="message">Система: ${this.character.name} прибывает в Аркхэм</div>
+                                <div class="message">Система: ${this.character.name} прибывает на ${location.name}</div>
                             </div>
                         </div>
                     </div>
                     <div class="navigation-panel">
                         <div class="nav-buttons">
-                            <button class="nav-btn">Исследовать</button>
-                            <button class="nav-btn">Инвентарь</button>
-                            <button class="nav-btn">Карта</button>
+                            ${this.createNavigationButtons()}
                         </div>
                         <div class="action-buttons">
-                            <button class="action-btn">🔍</button>
-                            <button class="action-btn">⚔️</button>
-                            <button class="action-btn">📖</button>
+                            <button class="action-btn" data-action="investigate">🔍</button>
+                            <button class="action-btn" data-action="combat">⚔️</button>
+                            <button class="action-btn" data-action="rest">📖</button>
                         </div>
                     </div>
                 </div>
             </div>
         `;
+    }
+
+    createNavigationButtons() {
+        const location = locations[this.currentLocation];
+        return location.connectedTo.map(locationId => {
+            const connectedLocation = locations[locationId];
+            return `<button class="nav-btn" data-location="${locationId}">${connectedLocation.name}</button>`;
+        }).join('');
+    }
+
+    changeLocation(locationId) {
+        console.log('Changing location to:', locationId);
+        if (locations[locationId]) {
+            this.currentLocation = locationId;
+            this.updateLocationInterface();
+            this.addMessage(`Вы перешли в локацию: ${locations[locationId].name}`);
+        } else {
+            console.error('Location not found:', locationId);
+        }
+    }
+
+    updateLocationInterface() {
+        const location = locations[this.currentLocation];
+        if (!location) return;
+
+        // Обновляем название локации
+        const locationTitle = document.querySelector('.location-info h2');
+        if (locationTitle) locationTitle.textContent = location.name;
+
+        // Обновляем изображение локации
+        const locationImage = document.querySelector('.location-image');
+        if (locationImage) locationImage.style.backgroundImage = `url('${location.image}')`;
+
+        // Обновляем описание локации
+        const locationDescription = document.querySelector('.location-description');
+        if (locationDescription) locationDescription.textContent = location.description;
+
+        // Обновляем кнопки навигации
+        const navButtons = document.querySelector('.nav-buttons');
+        if (navButtons) navButtons.innerHTML = this.createNavigationButtons();
+
+        // Переподключаем обработчики событий для новых кнопок
+        this.initializeEventListeners();
+    }
+
+    addEventListeners(container) {
+        console.log('Adding event listeners to game interface');
+        this.container = container;
+        this.initializeEventListeners();
+    }
+
+    initializeEventListeners() {
+        if (!this.container) return;
+
+        // Обработчики для кнопок навигации
+        const navButtons = this.container.querySelectorAll('.nav-btn');
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const locationId = button.dataset.location;
+                if (locationId) {
+                    this.changeLocation(locationId);
+                }
+            });
+        });
+
+        // Обработчики для кнопок действий
+        const actionButtons = this.container.querySelectorAll('.action-btn');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.action;
+                if (action) {
+                    this.handleAction(action);
+                }
+            });
+        });
+    }
+
+    addMessage(text) {
+        const chatMessages = this.container.querySelector('.chat-messages');
+        if (chatMessages) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.textContent = text;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+
+    handleAction(action) {
+        console.log('Handling action:', action);
+        switch (action) {
+            case 'investigate':
+                this.addMessage('Вы начинаете исследование местности...');
+                break;
+            case 'combat':
+                this.addMessage('Приготовьтесь к бою!');
+                break;
+            case 'rest':
+                this.addMessage('Вы решили передохнуть...');
+                break;
+        }
     }
 
     mount(container) {
@@ -84,194 +188,25 @@ export class GameInterface {
         }
     }
 
-    addEventListeners(container) {
-        console.log('Adding event listeners to game interface');
-        
-        const navButtons = container.querySelectorAll('.nav-btn');
-        const actionButtons = container.querySelectorAll('.action-btn');
-
-        navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                console.log('Navigation button clicked:', button.textContent);
-                this.handleNavigation(button.textContent);
-            });
-        });
-
-        actionButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                console.log('Action button clicked:', button.textContent);
-                this.handleAction(button.textContent);
-            });
-        });
-    }
-
-    handleNavigation(action) {
-        switch(action) {
-            case 'Исследовать':
-                this.addMessage('Исследуем текущую локацию...');
-                break;
-            case 'Инвентарь':
-                this.addMessage('Открываем инвентарь...');
-                break;
-            case 'Карта':
-                this.addMessage('Открываем карту...');
-                break;
-        }
-    }
-
-    handleAction(action) {
-        switch(action) {
-            case '🔍':
-                this.addMessage('Осматриваем окрестности...');
-                break;
-            case '⚔️':
-                this.addMessage('Готовимся к бою...');
-                break;
-            case '📖':
-                this.addMessage('Открываем журнал заданий...');
-                break;
-        }
-    }
-
-    addMessage(text) {
-        const chatMessages = document.querySelector('.chat-messages');
-        if (chatMessages) {
-            const message = document.createElement('div');
-            message.className = 'message';
-            message.textContent = text;
-            chatMessages.appendChild(message);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    }
-
-    initialize() {
-        // Создаем элемент интерфейса
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = cardTemplates.gameInterfaceTemplate(this.character, this.currentLocation);
-        this.element = tempDiv.firstElementChild;
-
-        // Добавляем обработчики событий
-        this.initializeEventListeners();
-    }
-
-    initializeEventListeners() {
-        // Обработчики для кнопок действий
-        const actionButtons = this.element.querySelectorAll('.action-btn');
-        actionButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const action = button.querySelector('span').textContent;
-                this.handleAction(action);
-            });
-        });
-
-        // Обработчики для кнопок локаций
-        const locationButtons = this.element.querySelectorAll('.location-btn');
-        locationButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const locationId = button.dataset.location;
-                this.changeLocation(locationId);
-            });
-        });
-
-        // Обработчики для кнопок NPC
-        const npcButtons = this.element.querySelectorAll('.npc-btn');
-        npcButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const npc = button.querySelector('span').textContent;
-                this.handleNPCInteraction(npc);
-            });
-        });
-
-        // Обработчики для вкладок
-        const tabButtons = this.element.querySelectorAll('.tab-btn');
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                this.switchTab(button);
-            });
-        });
-    }
-
-    changeLocation(locationId) {
-        const newLocation = locations[locationId];
-        if (!newLocation) {
-            console.error(`Локация ${locationId} не найдена`);
-            return;
-        }
-
-        // Добавляем класс для анимации
-        const locationView = this.element.querySelector('.location-view');
-        if (locationView) {
-            locationView.classList.add('changing');
-        }
-
-        // Обновляем текущую локацию
-        this.currentLocation = newLocation;
-
-        // Обновляем интерфейс
-        this.updateLocationInterface();
-
-        // Добавляем сообщение в чат
-        this.addMessage(`Вы перешли в локацию: ${newLocation.name}`);
-    }
-
-    updateLocationInterface() {
-        // Обновляем изображение и информацию о локации
-        const gameScene = this.element.querySelector('.game-scene');
-        gameScene.innerHTML = cardTemplates.locationTemplate(this.currentLocation);
-
-        // Обновляем название локации в верхней панели
-        const locationName = this.element.querySelector('.location-name span');
-        locationName.textContent = this.currentLocation.name;
-
-        // Обновляем список доступных локаций
-        const locationList = this.element.querySelector('.location-list');
-        locationList.innerHTML = `
-            <h3>Доступные локации</h3>
-            ${this.currentLocation.connectedTo.map(locationId => `
-                <button class="location-btn" data-location="${locationId}">
-                    <div class="icon arrow-icon"></div>
-                    <span>${locations[locationId].name}</span>
-                </button>
-            `).join('')}
-        `;
-
-        // Обновляем обработчики событий для новых кнопок
-        this.initializeEventListeners();
-    }
-
-    handleNPCInteraction(npc) {
-        this.addMessage(`Начат диалог с персонажем: ${npc}`);
-        // Здесь будет логика взаимодействия с NPC
-    }
-
-    switchTab(selectedTab) {
-        // Убираем активный класс у всех вкладок
-        const tabs = this.element.querySelectorAll('.tab-btn');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        
-        // Добавляем активный класс выбранной вкладке
-        selectedTab.classList.add('active');
-    }
-
     updateHealth(current, max) {
-        const healthBar = this.element.querySelector('.health-bar .bar-fill');
-        const healthText = this.element.querySelector('.health-bar .bar-text');
+        const healthBar = this.container.querySelector('.health-bar .bar-fill');
+        const healthText = this.container.querySelector('.health-bar .bar-text');
         
         healthBar.style.width = `${(current / max) * 100}%`;
         healthText.textContent = `ХП: ${current}/${max}`;
     }
 
     updateSanity(current, max) {
-        const sanityBar = this.element.querySelector('.energy-bar .bar-fill');
-        const sanityText = this.element.querySelector('.energy-bar .bar-text');
+        const sanityBar = this.container.querySelector('.energy-bar .bar-fill');
+        const sanityText = this.container.querySelector('.energy-bar .bar-text');
         
         sanityBar.style.width = `${(current / max) * 100}%`;
         sanityText.textContent = `Рассудок: ${current}/${max}`;
     }
 
     unmount() {
-        if (this.element && this.element.parentNode) {
-            this.element.parentNode.removeChild(this.element);
+        if (this.container && this.container.parentNode) {
+            this.container.parentNode.removeChild(this.container);
         }
     }
 } 

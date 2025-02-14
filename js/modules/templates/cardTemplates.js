@@ -29,14 +29,14 @@ export const cardTemplates = {
 
     // Шаблон карточки персонажа
     characterCard: (character) => `
-        <div class="character-card" data-character="${character.id}">
+        <div class="character-card" data-character-id="${character.id}">
             <div class="character-header">
                 <h3 class="character-name">${character.name}</h3>
                 <div class="character-role">${character.role}</div>
             </div>
             
             <div class="character-main-content">
-                <div class="character-portrait" style="background-image: url('character/${character.id}.jpg')"></div>
+                <div class="character-portrait" style="background-image: url('images/characters/${character.id}.jpg')"></div>
                 
                 <div class="character-stats">
                     <div class="stats-column">

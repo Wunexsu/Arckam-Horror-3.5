@@ -13,7 +13,8 @@ const INITIAL_STATE = {
     monsters: [],
     districts: {},
     selectedCharacter: null,
-    selectedScenario: null
+    selectedScenario: null,
+    mythosMode: 'standard'
 };
 
 // Менеджер состояния игры
@@ -53,9 +54,18 @@ export class StateManager {
         });
     }
 
+    // Установка режима мифов
+    setMythosMode(isModified) {
+        this.setState({
+            mythosMode: isModified ? 'modified' : 'standard'
+        });
+        console.log('Режим мифов установлен:', this.state.mythosMode);
+    }
+
     // Сброс состояния
     resetState() {
-        this.setState(INITIAL_STATE);
+        this.state = { ...INITIAL_STATE };
+        this.notifySubscribers();
     }
 
     // Подписка на изменения

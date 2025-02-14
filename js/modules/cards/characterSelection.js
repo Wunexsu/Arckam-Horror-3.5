@@ -22,7 +22,7 @@ export class CharacterSelection {
         this.overlay = this.createOverlay();
         document.body.appendChild(this.overlay);
         this.startGameBtn = document.querySelector('.start-game-btn');
-        this.startGameHandler = () => this.startGame();
+        this.startGameHandler = this.startGame.bind(this);
         this.initialize();
     }
 
@@ -54,24 +54,19 @@ export class CharacterSelection {
     }
 
     initStartGameButton() {
-        const startButtons = document.querySelectorAll('.start-game-btn');
-        startButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Start button clicked, disabled:', btn.disabled);
-                if (!btn.disabled) {
-                    this.startGame();
-                }
-            });
-        });
+        if (this.startGameBtn) {
+            this.startGameBtn.removeEventListener('click', this.startGameHandler);
+            this.startGameBtn.addEventListener('click', this.startGameHandler);
+            console.log('Start game button initialized');
+        } else {
+            console.error('Start game button not found in DOM');
+        }
     }
 
     removeEventListeners() {
-        const startButtons = document.querySelectorAll('.start-game-btn');
-        startButtons.forEach(btn => {
-            btn.removeEventListener('click', this.startGameHandler);
-        });
+        if (this.startGameBtn) {
+            this.startGameBtn.removeEventListener('click', this.startGameHandler);
+        }
     }
 
     addEventListeners() {
@@ -93,22 +88,17 @@ export class CharacterSelection {
     handleCharacterSelection(card) {
         console.log('Character card clicked:', card);
         
+        const characterId = card.dataset.characterId;
+        this.selectedCharacter = characters[characterId];
+        
         const previousCard = this.container.querySelector('.character-card.active');
         if (previousCard) {
             previousCard.classList.remove('active');
             this.disableItemChoices(previousCard);
         }
-
-        card.classList.add('active');
-
-        const characterId = card.getAttribute('data-character');
-        console.log('Character ID:', characterId);
-        this.selectedCharacter = characters[characterId];
-        console.log('Selected character:', this.selectedCharacter);
-
-        this.selectedItems.clear();
-        this.enableItemChoices(card);
         
+        card.classList.add('active');
+        this.enableItemChoices(card);
         this.updateStartGameButton();
     }
 
@@ -122,14 +112,17 @@ export class CharacterSelection {
         const itemChoices = choice.parentElement.querySelectorAll('.item-choice');
         itemChoices.forEach(item => {
             item.classList.remove('selected');
-            this.selectedItems.delete(item.getAttribute('data-item'));
+            this.selectedItems.delete(item.dataset.item);
         });
 
         choice.classList.add('selected');
-        const selectedItem = choice.getAttribute('data-item');
-        this.selectedItems.add(selectedItem);
-        
-        console.log('Selected items:', Array.from(this.selectedItems));
+        const selectedItem = choice.dataset.item;
+        if (selectedItem) {
+            this.selectedItems.add(selectedItem);
+            console.log('Selected items:', Array.from(this.selectedItems));
+        } else {
+            console.error('No item data found on element:', choice);
+        }
         
         this.updateStartGameButton();
     }
@@ -166,65 +159,56 @@ export class CharacterSelection {
     }
 
     updateStartGameButton() {
-        const activeCard = document.querySelector('.character-card.active');
-        if (activeCard) {
-            const startGameContainer = activeCard.querySelector('.start-game-container');
-            const startGameBtn = activeCard.querySelector('.start-game-btn');
-            
-            if (startGameContainer && startGameBtn) {
-                const canStartGame = this.selectedCharacter && this.selectedItems.size > 0;
-                startGameBtn.disabled = !canStartGame;
-                
-                if (canStartGame) {
-                    startGameContainer.classList.add('visible');
-                    console.log('Enabling start game button');
-                } else {
-                    startGameContainer.classList.remove('visible');
-                    console.log('Disabling start game button');
-                }
-            }
+        if (this.startGameBtn) {
+            const isValid = this.selectedCharacter !== null && this.selectedItems.size > 0;
+            this.startGameBtn.disabled = !isValid;
+            console.log('Start button state updated:', { 
+                isValid, 
+                hasCharacter: this.selectedCharacter !== null,
+                itemsSelected: this.selectedItems.size,
+                disabled: this.startGameBtn.disabled 
+            });
         }
     }
 
     startGame() {
-        console.log('startGame called');
-        if (this.selectedCharacter && this.selectedItems.size > 0) {
-            console.log('Starting game with:', {
-                character: this.selectedCharacter,
-                items: Array.from(this.selectedItems)
+        console.log('Starting game...');
+        if (!this.selectedCharacter) {
+            console.error('No character selected');
+            return;
+        }
+
+        if (this.selectedItems.size === 0) {
+            console.error('No items selected');
+            return;
+        }
+
+        try {
+            const gameStartEvent = new CustomEvent('gameStart', {
+                detail: {
+                    character: this.selectedCharacter,
+                    selectedItems: Array.from(this.selectedItems)
+                },
+                bubbles: true
             });
             
-            try {
-                const gameStartEvent = new CustomEvent('gameStart', {
-                    detail: {
-                        character: this.selectedCharacter,
-                        selectedItems: Array.from(this.selectedItems)
-                    },
-                    bubbles: true
-                });
-                
-                document.dispatchEvent(gameStartEvent);
-                console.log('Game start event dispatched');
-                
-                const characterMode = document.querySelector('.character-mode');
-                const gameMode = document.querySelector('.game-mode');
-                
-                if (characterMode && gameMode) {
-                    characterMode.style.display = 'none';
-                    gameMode.style.display = 'flex';
-                    gameMode.classList.add('active');
-                    console.log('Switched to game mode');
-                } else {
-                    console.error('Game mode elements not found');
-                }
-            } catch (error) {
-                console.error('Error in startGame:', error);
+            console.log('Dispatching gameStart event:', gameStartEvent.detail);
+            document.dispatchEvent(gameStartEvent);
+            
+            // Переключаем экраны после успешного запуска
+            const characterMode = document.querySelector('.character-mode');
+            const gameMode = document.querySelector('.game-mode');
+            
+            if (characterMode && gameMode) {
+                characterMode.style.display = 'none';
+                gameMode.style.display = 'flex';
+                gameMode.classList.add('active');
+                console.log('Switched to game mode');
+            } else {
+                console.error('Game mode elements not found');
             }
-        } else {
-            console.log('Cannot start game: missing character or items', {
-                hasCharacter: !!this.selectedCharacter,
-                selectedItems: this.selectedItems.size
-            });
+        } catch (error) {
+            console.error('Error starting game:', error);
         }
     }
 

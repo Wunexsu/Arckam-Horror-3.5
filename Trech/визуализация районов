@@ -1,6 +1,0 @@
-<!-- Пример структуры района -->
-<div class="district" data-id="station">
-  <div class="clue-token">2</div>
-  <div class="despair-token">1</div>
-  <div class="monster" data-type="cultist"></div>
-</div>

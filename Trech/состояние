@@ -1,8 +1,0 @@
-const gameState = {
-  players: [
-    { name: "Агнес", health: 5, sanity: 3, clues: 2 }
-  ],
-  threat: 0,
-  mythDeck: ["despair", "clue", "empty"],
-  monsters: []
-};

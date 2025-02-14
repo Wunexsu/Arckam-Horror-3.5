@@ -1,8 +1,0 @@
-// Пример монстра
-const monsters = {
-  "blindWatcher": {
-    health: 4,
-    attackMod: -1,
-    activation: "Двигается к ближайшему сыщику."
-  }
-};
